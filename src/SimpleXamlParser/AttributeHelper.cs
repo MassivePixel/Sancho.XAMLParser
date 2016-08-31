@@ -77,6 +77,18 @@ namespace SimpleXamlParser
                 return false;
             }
 
+            if (propertyType == typeof(bool))
+            {
+                bool b;
+                if (bool.TryParse(attributeValue, out b))
+                {
+                    value = b;
+                    return true;
+                }
+
+                return false;
+            }
+
             var typeConverter = ReflectionHelpers.GetTypeConverter(propertyType);
             if (typeConverter == null)
             {
