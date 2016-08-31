@@ -1,0 +1,23 @@
+// Copyright (c) Massive Pixel.  All Rights Reserved.  Licensed under the MIT License (MIT). See License.txt in the project root for license information.
+
+using System.Collections.Generic;
+
+namespace SimpleXamlParser
+{
+    public class XamlNode
+    {
+        public string Name { get; }
+        public List<XamlNode> Children { get; } = new List<XamlNode>();
+        public List<XamlProperty> Properties { get; } = new List<XamlProperty>();
+
+        public XamlNode(string name)
+        {
+            Name = name;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("[XamlNode: Name={0}, Children={1}, Properties={2}]", Name, Children, Properties);
+        }
+    }
+}
