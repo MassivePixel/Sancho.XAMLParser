@@ -22,7 +22,10 @@ namespace DeserializationTests
     {
         StringBuilder sb = new StringBuilder();
         protected Parser parser;
-        XamlDOMCreator dom = new XamlDOMCreator();
+        XamlDOMCreator dom = new XamlDOMCreator
+        {
+            Platform = Xamarin.Forms.TargetPlatform.iOS
+        };
 
         public BaseTest()
         {

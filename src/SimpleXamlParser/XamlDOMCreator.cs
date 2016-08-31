@@ -15,6 +15,8 @@ namespace SimpleXamlParser
         public object Root { get; private set; }
         public Action<string> Logger { get; set; }
 
+        public TargetPlatform Platform { get; set; }
+
         public XamlDOMCreator()
         {
             Logger = s => { };
@@ -71,7 +73,7 @@ namespace SimpleXamlParser
                     if (contentProp != null &&
                         contentProp.PropertyType == typeof(string))
                     {
-                        contentProp.SetValue(parent, xamlProperty.Value);   
+                        contentProp.SetValue(parent, xamlProperty.Value);
                     }
                 }
                 else if (xamlProperty.Value is XamlNode)
@@ -107,14 +109,14 @@ namespace SimpleXamlParser
                     {
                         var values = ((XamlNodeCollection)xamlProperty.Value).Nodes
                                                                              .Select(node => CreateNode(node))
+                                                                             .Where(v => v != null)
                                                                              .ToList();
 
                         if (typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(prop.PropertyType.GetTypeInfo()))
                         {
                             var addMethod = prop.PropertyType
                                                 .GetRuntimeMethods()
-                                                .Where(m => m.Name == "Add")
-                                                .FirstOrDefault();
+                                                .FirstOrDefault(m => m.Name == "Add");
 
                             var propValue = prop.GetValue(parent);
                             if (propValue == null)
@@ -132,10 +134,28 @@ namespace SimpleXamlParser
                                     addMethod.Invoke(propValue, new[] { value });
                             }
                         }
-                        else if (values.Any() &&
-                                 prop.PropertyType.GetTypeInfo().IsAssignableFrom(values[0].GetType().GetTypeInfo()))
+                        else if (values.Any())
                         {
-                            prop.SetValue(parent, values[0]);
+                            var value = values.First();
+
+                            if (prop.PropertyType.GetTypeInfo().IsAssignableFrom(value.GetType().GetTypeInfo()))
+                            {
+                                prop.SetValue(parent, values[0]);
+                            }
+                            else if (value?.GetType()?.Name?.StartsWith("OnPlatform") == true)
+                            {
+                                if (Platform == TargetPlatform.iOS)
+                                {
+                                    var platprop = value.GetType()
+                                                        .GetRuntimeProperty(nameof(OnPlatform<int>.iOS));
+
+                                    if (platprop != null)
+                                    {
+                                        var platformValue = platprop.GetValue(value);
+                                        prop.SetValue(parent, platformValue);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -175,11 +195,35 @@ namespace SimpleXamlParser
 
                 foreach (var child in node.Children)
                     AddChild(element, child);
-                
+
                 foreach (var prop in node.Properties)
                     ApplyProperty(element, prop);
 
                 return element;
+            }
+
+            if (node.Name == "OnPlatform")
+            {
+                type = ReflectionHelpers.AllTypes.FirstOrDefault(t => t.Key.Contains("OnPlatform")).Value;
+
+                var typeArgumentProperty = node.Properties.FirstOrDefault(p => p.Name == "TypeArguments");
+                if (typeArgumentProperty != null)
+                {
+                    var typeArgument = ReflectionHelpers.GetType(typeArgumentProperty.Value as string) ??
+                                       ReflectionHelpers.GetAllType(typeArgumentProperty.Value as string);
+                    if (typeArgument != null)
+                    {
+                        type = type.MakeGenericType(new[] { typeArgument });
+                        var element = Activator.CreateInstance(type);
+
+                        foreach (var prop in node.Properties)
+                        {
+                            ApplyProperty(element, prop);
+                        }
+
+                        return element;
+                    }
+                }
             }
 
             return null;
