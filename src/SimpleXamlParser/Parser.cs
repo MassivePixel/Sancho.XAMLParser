@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using Serilog;
 using SimpleXamlParser.Interfaces;
 
 namespace SimpleXamlParser
@@ -12,33 +13,33 @@ namespace SimpleXamlParser
     {
         IXamlDOM dom;
 
-        public Action<string> Logger { get; }
-
-        public Parser(IXamlDOM dom, Action<string> logger = null)
+        public Parser(IXamlDOM dom)
         {
+            Log.Debug("Parser instantiated");
+
             this.dom = dom;
-            Logger = logger ?? delegate (string s) { };
-            dom.Logger = Logger;
         }
 
         public XamlNode Parse(string xaml)
         {
+            Log.Debug("Parser invoked with {XAML}", xaml?.Substring(0, Math.Min(xaml?.Length ?? 0, 30)));
+
             if (string.IsNullOrWhiteSpace(xaml))
             {
-                Logger("The specified XAML is empty");
+                Log.Information("The specified XAML is empty");
                 return null;
             }
 
             var doc = XDocument.Parse(xaml);
             if (doc == null)
             {
-                Logger("Cannot parse xaml");
+                Log.Information("Cannot parse xaml");
                 return null;
             }
 
             var root = ParseNode(doc.Root);
             // TODO: extract DOM creation outside of parser
-            dom.AddNode(root);
+            dom?.AddNode(root);
             return root;
         }
 
