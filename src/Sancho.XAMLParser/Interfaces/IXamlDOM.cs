@@ -6,8 +6,6 @@ namespace Sancho.XAMLParser.Interfaces
 {
     public interface IXamlDOM
     {
-        Action<string> Logger { get; set; }
-
         void AddNode(XamlNode root);
     }
 }
