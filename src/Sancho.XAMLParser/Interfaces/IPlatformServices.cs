@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace SimpleXamlParser.Interfaces
+namespace Sancho.XAMLParser.Interfaces
 {
     public interface IPlatformServices
     {

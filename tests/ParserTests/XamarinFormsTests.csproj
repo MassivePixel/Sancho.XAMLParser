@@ -7,7 +7,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{BAB83348-0035-465B-A693-CB46102A2A67}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>DeserializationTests</RootNamespace>
+    <RootNamespace>XamarinFormsTests</RootNamespace>
     <AssemblyName>DeserializationTests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -56,7 +56,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SimpleXamlParser\SimpleXamlParser.csproj">
+    <ProjectReference Include="..\..\src\Sacho.DOM.XamarinForms\Sacho.DOM.XamarinForms.csproj">
+      <Project>{D0EDD907-6345-4C51-BB14-7CBBA52753D2}</Project>
+      <Name>Sacho.DOM.XamarinForms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Sancho.XAMLParser\Sancho.XAMLParser.csproj">
       <Project>{E8496901-E68F-466C-9FF9-32F71CC8B965}</Project>
       <Name>Sancho.XAMLParser</Name>
     </ProjectReference>

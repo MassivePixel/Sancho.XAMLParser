@@ -5,10 +5,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using SimpleXamlParser.Interfaces;
+using Sancho.XAMLParser;
+using Sancho.XAMLParser.Interfaces;
 using Xamarin.Forms;
 
-namespace SimpleXamlParser
+namespace Sancho.DOM.XamarinForms
 {
     public class XamlDOMCreator : IXamlDOM
     {
@@ -98,66 +99,71 @@ namespace SimpleXamlParser
             }
             else if (xamlProperty.Name.Contains("."))
             {
-                HandleAttachedProperty(parent as VisualElement, xamlProperty.Name, xamlProperty.GetString());
+                HandleAttachedProperty(parent, xamlProperty.Name, xamlProperty.GetString());
             }
             else
             {
-                var prop = parent.GetType().GetRuntimeProperty(xamlProperty.Name);
-                if (prop != null)
+                HandleProperty(parent, xamlProperty);
+            }
+        }
+
+        public void HandleProperty(object parent, XamlProperty xamlProperty)
+        {
+            var prop = parent.GetType().GetRuntimeProperty(xamlProperty.Name);
+            if (prop != null)
+            {
+                if (xamlProperty is XamlStringProperty)
                 {
-                    if (xamlProperty is XamlStringProperty)
-                    {
-                        AttributeHelper.Apply(parent, prop, xamlProperty.GetString());
-                    }
-                    else if (xamlProperty is XamlNodesProperty)
-                    {
-                        var values = xamlProperty.GetNodes()
-                                                 .Select(node => CreateNode(node))
-                                                 .Where(v => v != null)
-                                                 .ToList();
+                    AttributeHelper.Apply(parent, prop, xamlProperty.GetString());
+                }
+                else if (xamlProperty is XamlNodesProperty)
+                {
+                    var values = xamlProperty.GetNodes()
+                                             .Select(node => CreateNode(node))
+                                             .Where(v => v != null)
+                                             .ToList();
 
-                        if (typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(prop.PropertyType.GetTypeInfo()))
+                    if (typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(prop.PropertyType.GetTypeInfo()))
+                    {
+                        var addMethod = prop.PropertyType
+                                            .GetRuntimeMethods()
+                                            .FirstOrDefault(m => m.Name == "Add");
+
+                        var propValue = prop.GetValue(parent);
+                        if (propValue == null)
                         {
-                            var addMethod = prop.PropertyType
-                                                .GetRuntimeMethods()
-                                                .FirstOrDefault(m => m.Name == "Add");
-
-                            var propValue = prop.GetValue(parent);
-                            if (propValue == null)
+                            try
                             {
-                                try
-                                {
-                                    prop.SetValue(parent, propValue = Activator.CreateInstance(prop.PropertyType));
-                                }
-                                catch { }
+                                prop.SetValue(parent, propValue = Activator.CreateInstance(prop.PropertyType));
                             }
-
-                            if (propValue != null && addMethod != null)
-                            {
-                                foreach (var value in values)
-                                    addMethod.Invoke(propValue, new[] { value });
-                            }
+                            catch { }
                         }
-                        else if (values.Any())
+
+                        if (propValue != null && addMethod != null)
                         {
-                            var value = values.First();
+                            foreach (var value in values)
+                                addMethod.Invoke(propValue, new[] { value });
+                        }
+                    }
+                    else if (values.Any())
+                    {
+                        var value = values.First();
 
-                            if (prop.PropertyType.GetTypeInfo().IsAssignableFrom(value.GetType().GetTypeInfo()))
+                        if (prop.PropertyType.GetTypeInfo().IsAssignableFrom(value.GetType().GetTypeInfo()))
+                        {
+                            prop.SetValue(parent, values[0]);
+                        }
+                        else if (value?.GetType()?.Name?.StartsWith("OnPlatform") == true)
+                        {
+                            if (Platform == TargetPlatform.iOS)
                             {
-                                prop.SetValue(parent, values[0]);
-                            }
-                            else if (value?.GetType()?.Name?.StartsWith("OnPlatform") == true)
-                            {
-                                if (Platform == TargetPlatform.iOS)
+                                var platprop = value.GetType()
+                                                    .GetRuntimeProperty(nameof(OnPlatform<int>.iOS));
+
+                                if (platprop != null)
                                 {
-                                    var platprop = value.GetType()
-                                                        .GetRuntimeProperty(nameof(OnPlatform<int>.iOS));
-
-                                    if (platprop != null)
-                                    {
-                                        var platformValue = platprop.GetValue(value);
-                                        prop.SetValue(parent, platformValue);
-                                    }
+                                    var platformValue = platprop.GetValue(value);
+                                    prop.SetValue(parent, platformValue);
                                 }
                             }
                         }
@@ -295,7 +301,7 @@ namespace SimpleXamlParser
             if (parsed == null)
             {
                 Logger($"Ignoring null values for attached property {property}");
-                return;               
+                return;
             }
 
             if (!parameters[1].ParameterType.GetTypeInfo().IsAssignableFrom(parsed.GetType().GetTypeInfo()))

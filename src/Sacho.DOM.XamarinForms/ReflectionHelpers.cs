@@ -4,12 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using SimpleXamlParser.Interfaces;
+using Sancho.XAMLParser.Interfaces;
 using Xamarin.Forms;
 
-namespace SimpleXamlParser
+namespace Sancho.DOM.XamarinForms
 {
-
     public static class ReflectionHelpers
     {
         static IPlatformServices platformServices;

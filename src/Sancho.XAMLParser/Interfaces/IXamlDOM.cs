@@ -2,7 +2,7 @@
 
 using System;
 
-namespace SimpleXamlParser.Interfaces
+namespace Sancho.XAMLParser.Interfaces
 {
     public interface IXamlDOM
     {

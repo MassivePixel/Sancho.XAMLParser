@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using SimpleXamlParser.Interfaces;
+using Sancho.XAMLParser.Interfaces;
 
-namespace DeserializationTests
+namespace XamarinFormsTests
 {
     public class PlatformServices : IPlatformServices
     {

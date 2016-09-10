@@ -2,7 +2,7 @@
 using Xamarin.Forms;
 using Xunit;
 
-namespace DeserializationTests
+namespace XamarinFormsTests
 {
     public class QuickStartTest : BaseTest
     {

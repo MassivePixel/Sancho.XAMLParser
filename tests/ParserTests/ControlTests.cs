@@ -3,14 +3,14 @@
 using Xamarin.Forms;
 using Xunit;
 
-namespace DeserializationTests
+namespace XamarinFormsTests
 {
     public class ControlTests : BaseTest
     {
         [Fact]
         public void ParseButton()
         {
-            Assert.IsType<Button>(ParseVisualElement("<Button />"));
+            Assert.NotNull(ParseVisualElement<Button>("<Button />"));
         }
 
         [Fact]
@@ -30,11 +30,11 @@ namespace DeserializationTests
     <Button />
 </StackLayout>
 ";
-            var root = ParseVisualElement(xaml);
+            var root = ParseVisualElement<StackLayout>(xaml);
 
-            Assert.IsType<StackLayout>(root);
+            Assert.NotNull(root);
 
-            var sl = (StackLayout)root;
+            var sl = root;
             Assert.Equal(2, sl.Children.Count);
             Assert.IsType<Button>(sl.Children[0]);
             Assert.IsType<Button>(sl.Children[1]);
@@ -50,9 +50,9 @@ namespace DeserializationTests
     </StackLayout>
 </StackLayout>
 ";
-            var root = ParseVisualElement(xaml);
+            var root = ParseVisualElement<StackLayout>(xaml);
 
-            Assert.IsType<StackLayout>(root);
+            Assert.NotNull(root);
 
             var sl = (StackLayout)root;
             Assert.Equal(1, sl.Children.Count);
@@ -74,9 +74,9 @@ namespace DeserializationTests
     </StackLayout.Children>
 </StackLayout>
 ";
-            var root = ParseVisualElement(xaml);
+            var root = ParseVisualElement<StackLayout>(xaml);
 
-            Assert.IsType<StackLayout>(root);
+            Assert.NotNull(root);
 
             var sl = (StackLayout)root;
             Assert.Equal(2, sl.Children.Count);
@@ -93,9 +93,9 @@ namespace DeserializationTests
     <Button />
 </Grid>
 ";
-            var root = ParseVisualElement(xaml);
+            var root = ParseVisualElement<Grid>(xaml);
 
-            Assert.IsType<Grid>(root);
+            Assert.NotNull(root);
 
             var grid = (Grid)root;
             Assert.Equal(2, grid.Children.Count);
@@ -114,9 +114,9 @@ namespace DeserializationTests
     </Grid.Children>
 </Grid>
 ";
-            var root = ParseVisualElement(xaml);
+            var root = ParseVisualElement<Grid>(xaml);
 
-            Assert.IsType<Grid>(root);
+            Assert.NotNull(root);
 
             var grid = (Grid)root;
             Assert.Equal(2, grid.Children.Count);
@@ -136,7 +136,7 @@ namespace DeserializationTests
     </Grid.RowDefinitions>
 </Grid>";
 
-            var grid = ParseVisualElement(xaml) as Grid;
+            var grid = ParseVisualElement<Grid>(xaml);
 
             Assert.Equal(3, grid.RowDefinitions.Count);
             Assert.Equal(GridUnitType.Star, grid.RowDefinitions[0].Height.GridUnitType);
@@ -147,33 +147,33 @@ namespace DeserializationTests
         [Fact]
         public void ParseScrollViewContent()
         {
-            var sv = ParseVisualElement(@"
+            var sv = ParseVisualElement<ScrollView>(@"
 <ScrollView>
     <Grid />
-</ScrollView>") as ScrollView;
-            Assert.IsType<Grid>(sv.Content);
+</ScrollView>");
+            Assert.IsType<Grid>(sv?.Content);
         }
 
         [Fact]
         public void ParseScrollViewExpandedContent()
         {
-            var sv = ParseVisualElement(@"
+            var sv = ParseVisualElement<ScrollView>(@"
 <ScrollView>
     <ScrollView.Content>
         <Grid />
     </ScrollView.Content>
-</ScrollView>") as ScrollView;
-            Assert.IsType<Grid>(sv.Content);
+</ScrollView>");
+            Assert.IsType<Grid>(sv?.Content);
         }
 
         [Fact]
         public void ParseContentPageContent()
         {
-            var contentPage = ParseVisualElement(@"
+            var contentPage = ParseVisualElement<ContentPage>(@"
 <ContentPage>
     <Grid />
 </ContentPage>
-            ") as ContentPage;
+            ");
 
             Assert.IsType<Grid>(contentPage?.Content);
         }
@@ -181,13 +181,13 @@ namespace DeserializationTests
         [Fact]
         public void ParseContentPageExpandedContent()
         {
-            var contentPage = ParseVisualElement(@"
+            var contentPage = ParseVisualElement<ContentPage>(@"
 <ContentPage>
     <ContentPage.Content>
         <Grid />
     </ContentPage.Content>
 </ContentPage>
-            ") as ContentPage;
+            ");
 
             Assert.IsType<Grid>(contentPage?.Content);
         }
@@ -196,10 +196,10 @@ namespace DeserializationTests
         public void ParseExpandedStringProperty()
         {
             var text = "hello";
-            var label = ParseVisualElement($@"
+            var label = ParseVisualElement<Label>($@"
 <Label>
     <Label.Text>{text}</Label.Text>
-</Label>") as Label;
+</Label>");
 
             Assert.Equal(text, label?.Text);
         }
@@ -208,10 +208,10 @@ namespace DeserializationTests
         public void ParseExpandedColorProperty()
         {
             var text = "Red";
-            var label = ParseVisualElement($@"
+            var label = ParseVisualElement<Label>($@"
 <Label>
     <Label.TextColor>{text}</Label.TextColor>
-</Label>") as Label;
+</Label>");
 
             Assert.Equal(Color.Red, label?.TextColor);
         }
@@ -219,11 +219,11 @@ namespace DeserializationTests
         [Fact]
         public void ParseDataTemplate()
         {
-            var dt = ParseVisualElement(@"
+            var dt = ParseVisualElement<DataTemplate>(@"
 <DataTemplate>
     <Grid />
-</DataTemplate>") as DataTemplate;
-            Assert.IsType<Grid>(dt.CreateContent());
+</DataTemplate>");
+            Assert.IsType<Grid>(dt?.CreateContent());
         }
 
         [Fact]

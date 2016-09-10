@@ -4,20 +4,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using Sancho.XAMLParser.Interfaces;
 using Serilog;
-using SimpleXamlParser.Interfaces;
 
-namespace SimpleXamlParser
+namespace Sancho.XAMLParser
 {
     public class Parser
     {
         IXamlDOM dom;
 
-        public Parser(IXamlDOM dom)
+        public Parser()
         {
             Log.Debug("Parser instantiated");
-
-            this.dom = dom;
         }
 
         public XamlNode Parse(string xaml)
@@ -38,8 +36,6 @@ namespace SimpleXamlParser
             }
 
             var root = ParseNode(doc.Root);
-            // TODO: extract DOM creation outside of parser
-            dom?.AddNode(root);
             return root;
         }
 
@@ -58,20 +54,11 @@ namespace SimpleXamlParser
                     {
                         if (child.HasElements)
                         {
-                            // TODO: do this as an extra pass rather than here
-                            if (IsContentNode(element, child))
-                            {
-                                node.Children.AddRange(child.Elements()
-                                                            .Select(el => ParseNode(el)));
-                            }
-                            else
-                            {
-                                node.Properties.Add(new XamlNodesProperty(child.Name, ParseNodes(child.Elements())));
-                            }
+                            node.Properties.Add(new XamlNodesProperty(child.Name, ParseNodes(child.Elements())));
                         }
                         else if (!string.IsNullOrEmpty(child.Value))
                         {
-                            node.Properties.Add(new XamlStringProperty(child.Value));
+                            node.Properties.Add(new XamlStringProperty(child.Name, child.Value));
                         }
                     }
                     else
@@ -82,7 +69,7 @@ namespace SimpleXamlParser
             }
             else if (!string.IsNullOrEmpty(element.Value))
             {
-                node.Properties.Add(new XamlStringProperty(element.Value));
+                node.Properties.Add(new XamlStringProperty(null, element.Value));
             }
 
             return node;
@@ -93,23 +80,5 @@ namespace SimpleXamlParser
 
         public static XamlProperty ParseAttribute(XElement element, XAttribute attribute)
         => new XamlStringProperty(attribute.Name, attribute.Value);
-
-        // TODO: extract
-        public static bool IsContentNode(XElement element, XElement child)
-        {
-            var lastDot = child?.Name?.LocalName?.LastIndexOf(".");
-            if (lastDot >= 0)
-            {
-                var type = ReflectionHelpers.GetType(element?.Name?.LocalName);
-                if (type != null)
-                {
-                    var contentPropName = ReflectionHelpers.GetContentProperty(type)?.Name;
-                    return !string.IsNullOrWhiteSpace(contentPropName) &&
-                           contentPropName == child.Name.LocalName.Substring(lastDot.Value + 1);
-                }
-            }
-
-            return false;
-        }
     }
 }

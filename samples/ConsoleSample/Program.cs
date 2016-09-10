@@ -1,5 +1,7 @@
-﻿using Serilog;
-using SimpleXamlParser;
+﻿// Copyright (c) Massive Pixel.  All Rights Reserved.  Licensed under the MIT License (MIT). See License.txt in the project root for license information.
+
+using Sancho.XAMLParser;
+using Serilog;
 
 namespace ConsoleSample
 {
@@ -13,7 +15,7 @@ namespace ConsoleSample
                 .WriteTo.RollingFile("logs\\myapp-{Date}.txt")
                 .CreateLogger();
             
-            var parser = new Parser(null);
+            var parser = new Parser();
             var root = parser.Parse(@"<Button Text=""Hello"" NotAProp=""what?"" />");
             Log.Debug("Root {@Root}", root);
         }

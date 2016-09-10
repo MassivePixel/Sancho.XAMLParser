@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Xamarin.Forms;
 
-namespace SimpleXamlParser
+namespace Sancho.DOM.XamarinForms
 {
     public static class AttributeHelper
     {

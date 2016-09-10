@@ -3,11 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2564873C-D81B-4DD4-BCD3-DECD733F5D79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sancho.XAMLParser", "src\SimpleXamlParser\Sancho.XAMLParser.csproj", "{E8496901-E68F-466C-9FF9-32F71CC8B965}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{166256ED-BED2-40F8-BF8B-0BA37E2CE8A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParserTests", "tests\ParserTests\ParserTests.csproj", "{BAB83348-0035-465B-A693-CB46102A2A67}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamarinFormsTests", "tests\ParserTests\XamarinFormsTests.csproj", "{BAB83348-0035-465B-A693-CB46102A2A67}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{BEF44522-1EE7-4328-B775-8259F1D2BDE7}"
 EndProject
@@ -15,16 +13,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleSample", "samples\Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sacho.DOM.XamarinForms", "src\Sacho.DOM.XamarinForms\Sacho.DOM.XamarinForms.csproj", "{D0EDD907-6345-4C51-BB14-7CBBA52753D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sancho.XAMLParser", "src\Sancho.XAMLParser\Sancho.XAMLParser.csproj", "{E8496901-E68F-466C-9FF9-32F71CC8B965}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E8496901-E68F-466C-9FF9-32F71CC8B965}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E8496901-E68F-466C-9FF9-32F71CC8B965}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E8496901-E68F-466C-9FF9-32F71CC8B965}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E8496901-E68F-466C-9FF9-32F71CC8B965}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BAB83348-0035-465B-A693-CB46102A2A67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BAB83348-0035-465B-A693-CB46102A2A67}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BAB83348-0035-465B-A693-CB46102A2A67}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -37,11 +33,15 @@ Global
 		{D0EDD907-6345-4C51-BB14-7CBBA52753D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0EDD907-6345-4C51-BB14-7CBBA52753D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0EDD907-6345-4C51-BB14-7CBBA52753D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8496901-E68F-466C-9FF9-32F71CC8B965}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8496901-E68F-466C-9FF9-32F71CC8B965}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8496901-E68F-466C-9FF9-32F71CC8B965}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8496901-E68F-466C-9FF9-32F71CC8B965}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{E8496901-E68F-466C-9FF9-32F71CC8B965} = {2564873C-D81B-4DD4-BCD3-DECD733F5D79}
 		{BAB83348-0035-465B-A693-CB46102A2A67} = {166256ED-BED2-40F8-BF8B-0BA37E2CE8A6}
 		{B07C683D-E072-47E9-8CA9-1E650F7A371E} = {BEF44522-1EE7-4328-B775-8259F1D2BDE7}
 		{D0EDD907-6345-4C51-BB14-7CBBA52753D2} = {2564873C-D81B-4DD4-BCD3-DECD733F5D79}
+		{E8496901-E68F-466C-9FF9-32F71CC8B965} = {2564873C-D81B-4DD4-BCD3-DECD733F5D79}
 	EndGlobalSection
 EndGlobal

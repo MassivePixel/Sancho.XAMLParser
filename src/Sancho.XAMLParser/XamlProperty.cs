@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace SimpleXamlParser
+namespace Sancho.XAMLParser
 {
     public static class XamlPropertyExtensions
     {
@@ -19,14 +19,14 @@ namespace SimpleXamlParser
         public static List<XamlNode> GetNodes(this XamlProperty prop)
         {
             return prop is XamlNodesProperty
-                ? ((XamlNodesProperty)prop).Values
+                ? ((XamlNodesProperty)prop).Nodes
                 : new List<XamlNode>();
         }
     }
 
     public abstract class XamlProperty
     {
-        public string Name { get; }
+        public string Name { get; set; }
 
         public XamlProperty()
         {
@@ -34,9 +34,7 @@ namespace SimpleXamlParser
 
         public XamlProperty(string name)
         {
-            // extract last part of the name
-            var dotIndex = name.IndexOf(".");
-            Name = dotIndex != -1 ? name.Substring(dotIndex + 1) : name;
+            Name = name;
         }
     }
 
@@ -66,33 +64,33 @@ namespace SimpleXamlParser
 
     public class XamlNodesProperty : XamlProperty
     {
-        public List<XamlNode> Values { get; }
+        public List<XamlNode> Nodes { get; }
 
         public XamlNodesProperty()
         {
-            Values = new List<XamlNode>();
+            Nodes = new List<XamlNode>();
         }
 
-        public XamlNodesProperty(XName name, IEnumerable<XamlNode> values)
+        public XamlNodesProperty(XName name, IEnumerable<XamlNode> nodes)
             : base(name.LocalName)
         {
-            Values = (values ?? Enumerable.Empty<XamlNode>()).ToList();
+            Nodes = (nodes ?? Enumerable.Empty<XamlNode>()).ToList();
         }
 
-        public XamlNodesProperty(string name, IEnumerable<XamlNode> values)
+        public XamlNodesProperty(string name, IEnumerable<XamlNode> nodes)
             : base(name)
         {
-            Values = (values ?? Enumerable.Empty<XamlNode>()).ToList();
+            Nodes = (nodes ?? Enumerable.Empty<XamlNode>()).ToList();
         }
 
         public override string ToString()
         {
-            return string.Format("[Name={0}, Values={1}]", Name,
-                                 Values.Any() == false
+            return string.Format("[Name={0}, Nodes={1}]", Name,
+                                 Nodes.Any() == false
                                  ? "{ }"
-                                 : Values.Count == 1
-                                 ? $"{{ {Values[0]} }}"
-                                 : $"{{ {Values[0]}, ... }}");
+                                 : Nodes.Count == 1
+                                 ? $"{{ {Nodes[0]} }}"
+                                 : $"{{ {Nodes[0]}, ... }}");
         }
     }
 }

@@ -2,11 +2,12 @@
 
 using System.Collections.Generic;
 
-namespace SimpleXamlParser
+namespace Sancho.XAMLParser
 {
     public class XamlNode
     {
         public string Name { get; }
+
         public List<XamlNode> Children { get; } = new List<XamlNode>();
         public List<XamlProperty> Properties { get; } = new List<XamlProperty>();
 

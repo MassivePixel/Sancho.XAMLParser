@@ -2,10 +2,11 @@
 
 using System;
 using System.Text;
+using Sancho.DOM.XamarinForms;
+using Sancho.XAMLParser;
 using Xunit;
-using SimpleXamlParser;
 
-namespace DeserializationTests
+namespace XamarinFormsTests
 {
     public class ReflectionFixture : IDisposable
     {
@@ -29,20 +30,23 @@ namespace DeserializationTests
 
         public BaseTest()
         {
-            parser = new Parser(dom, s => sb.AppendLine(s));
+            parser = new Parser();
         }
 
-        protected object ParseVisualElement(string xaml)
-        {
-            parser.Parse(xaml);
-            return dom.Root;
-        }
+        //protected object ParseVisualElement(string xaml)
+        //{
+        //    var rootNode = parser.Parse(xaml);
+        //    rootNode = new ContentNodeProcessor().Process(rootNode);
+        //    return dom.CreateNode(rootNode);
+        //}
 
         protected T ParseVisualElement<T>(string xaml)
             where T : class
         {
-            parser.Parse(xaml);
-            return dom.Root as T;
+            var rootNode = parser.Parse(xaml);
+            rootNode = new ContentNodeProcessor().Process(rootNode);
+            rootNode = new ExpandedPropertiesProcessor().Process(rootNode);
+            return dom.CreateNode(rootNode) as T;
         }
     }
 }
