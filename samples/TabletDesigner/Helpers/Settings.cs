@@ -14,6 +14,12 @@ namespace TabletDesigner.Helpers
             set { Set(value); }
         }
 
+        public static string Json
+        {
+            get { return Get<string>(); }
+            set { Set(value); }
+        }
+
         static T Get<T>(T defaultValue = default(T), [CallerMemberName] string propertyName = null)
         {
             return AppSettings.GetValueOrDefault(propertyName, defaultValue);

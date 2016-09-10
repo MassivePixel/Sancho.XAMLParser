@@ -5,8 +5,12 @@
 		xmlns:local="clr-namespace:TabletDesigner"
 		x:Class="TabletDesigner.TabletDesignerPage">
 	
-	<Grid Padding="0,20,0,0">
+	<Grid Padding="0,20,0,0"
+			BackgroundColor="Black"
+			RowSpacing="2"
+			ColumnSpacing="2">
 		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
@@ -14,13 +18,23 @@
 			<ColumnDefinition Width="3*" />
 			<ColumnDefinition Width="2*" />
 		</Grid.ColumnDefinitions>
+
+		<StackLayout Grid.ColumnSpan="2"
+				BackgroundColor="White"
+				Orientation="Horizontal"
+				Padding="12,0,0,0">
+			<Button x:Name="BtnXaml" Text="XAML" Clicked="BtnXaml_Clicked" />
+			<Button x:Name="BtnJson" Text="JSON" Clicked="BtnJson_Clicked" />
+		</StackLayout>
 		
-		<Editor x:Name="editor"
+		<Editor Grid.Row="1" x:Name="editor"
 				FontFamily="Courier New"
 				FontSize="Small"
-				TextChanged="Handle_TextChanged"
+				TextChanged="Editor_TextChanged"
+				BackgroundColor="#DDDDDD"
 				/>
-		<ScrollView Grid.Column="1">
+		
+		<ScrollView Grid.Row="1" Grid.Column="1">
 			<Label x:Name="LoggerOutput"
 				   FontFamily="Courier New"
 				   BackgroundColor="#000000"
@@ -30,7 +44,9 @@
 				   />
 		</ScrollView>
 		
-		<ContentView Grid.Row="1" Grid.ColumnSpan="2" x:Name="Root" />
+		<ContentView Grid.Row="2" Grid.ColumnSpan="2" x:Name="Root"
+			BackgroundColor="White"
+			/>
 		
 	</Grid>
 	

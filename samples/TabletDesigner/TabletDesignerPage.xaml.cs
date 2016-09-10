@@ -6,15 +6,18 @@ using Xamarin.Forms;
 
 namespace TabletDesigner
 {
-    public interface ILogAccess
+    public enum EditorArea
     {
-        void Clear();
-        string Log { get; }
+        XAML,
+        JSON
     }
 
     public partial class TabletDesignerPage : ContentPage
     {
         ILogAccess logAccess;
+        EditorArea currentArea;
+
+        JsonModel model;
 
         public TabletDesignerPage()
         {
@@ -26,17 +29,32 @@ namespace TabletDesigner
         {
             base.OnAppearing();
             editor.Text = Settings.Xaml;
+            HandleJsonChanges(Settings.Json);
         }
 
-        void Handle_TextChanged(object sender, Xamarin.Forms.TextChangedEventArgs e)
+        void Editor_TextChanged(object sender, Xamarin.Forms.TextChangedEventArgs e)
+        {
+            switch (this.currentArea)
+            {
+                case EditorArea.XAML:
+                    Settings.Xaml = editor.Text;
+                    HandleXamlChanges(e.NewTextValue);
+                    break;
+
+                case EditorArea.JSON:
+                    Settings.Json = editor.Text;
+                    HandleJsonChanges(e.NewTextValue);
+                    break;
+            }
+        }
+
+        void HandleXamlChanges(string text)
         {
             try
             {
-                Settings.Xaml = editor.Text;
-
                 logAccess.Clear();
                 var parser = new Parser();
-                var rootNode = parser.Parse(e.NewTextValue);
+                var rootNode = parser.Parse(text);
 
                 rootNode = new ContentNodeProcessor().Process(rootNode);
                 rootNode = new ExpandedPropertiesProcessor().Process(rootNode);
@@ -47,8 +65,28 @@ namespace TabletDesigner
                 else if (dom is ContentPage)
                     Root.Content = ((ContentPage)dom).Content;
 
+                if (Root.Content != null && model != null)
+                    Root.Content.BindingContext = model;
+
                 LoggerOutput.FormattedText = FormatLog(logAccess.Log);
                 LoggerOutput.TextColor = Color.White;
+            }
+            catch (Exception ex)
+            {
+                LoggerOutput.FormattedText = FormatException(ex);
+                LoggerOutput.TextColor = Color.FromHex("#FF3030");
+            }
+        }
+
+        void HandleJsonChanges(string text)
+        {
+            try
+            {
+                logAccess.Clear();
+
+                model = JsonModel.Parse(text);
+                if (Root.Content != null)
+                    Root.Content.BindingContext = model;
             }
             catch (Exception ex)
             {
@@ -106,18 +144,34 @@ namespace TabletDesigner
 
                 if (ex.InnerException != null)
                 {
-                   fs.Spans.Add(new Span
-                   {
-                       Text = "--" + Environment.NewLine,
-                       ForegroundColor = Color.Red,
-                       FontFamily = LoggerOutput.FontFamily,
-                       FontSize = LoggerOutput.FontSize,
-                   }); 
+                    fs.Spans.Add(new Span
+                    {
+                        Text = "--" + Environment.NewLine,
+                        ForegroundColor = Color.Red,
+                        FontFamily = LoggerOutput.FontFamily,
+                        FontSize = LoggerOutput.FontSize,
+                    });
                 }
 
                 ex = ex.InnerException;
             }
             return fs;
+        }
+
+        void BtnXaml_Clicked(object sender, EventArgs args)
+        {
+            editor.TextChanged -= Editor_TextChanged;
+            editor.Text = Settings.Xaml;
+            currentArea = EditorArea.XAML;
+            editor.TextChanged += Editor_TextChanged;
+        }
+
+        void BtnJson_Clicked(object sender, EventArgs args)
+        {
+            editor.TextChanged -= Editor_TextChanged;
+            editor.Text = Settings.Json;
+            currentArea = EditorArea.JSON;
+            editor.TextChanged += Editor_TextChanged;
         }
     }
 }
