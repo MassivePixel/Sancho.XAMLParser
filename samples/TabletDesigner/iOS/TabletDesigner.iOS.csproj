@@ -110,6 +110,12 @@
     <Reference Include="Serilog.Sinks.TextWriter">
       <HintPath>..\..\..\packages\Serilog.Sinks.TextWriter.2.0.0\lib\netstandard1.0\Serilog.Sinks.TextWriter.dll</HintPath>
     </Reference>
+    <Reference Include="Plugin.Settings">
+      <HintPath>..\..\..\packages\Xam.Plugins.Settings.2.1.0\lib\Xamarin.iOS10\Plugin.Settings.dll</HintPath>
+    </Reference>
+    <Reference Include="Plugin.Settings.Abstractions">
+      <HintPath>..\..\..\packages\Xam.Plugins.Settings.2.1.0\lib\Xamarin.iOS10\Plugin.Settings.Abstractions.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Contents.json" />

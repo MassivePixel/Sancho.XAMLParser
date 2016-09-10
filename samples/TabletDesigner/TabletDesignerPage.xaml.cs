@@ -1,6 +1,7 @@
 ﻿using System;
 using Sancho.DOM.XamarinForms;
 using Sancho.XAMLParser;
+using TabletDesigner.Helpers;
 using Xamarin.Forms;
 
 namespace TabletDesigner
@@ -24,13 +25,15 @@ namespace TabletDesigner
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            editor.Text = @"<Button Text=""Hello world"" />";
+            editor.Text = Settings.Xaml;
         }
 
         void Handle_TextChanged(object sender, Xamarin.Forms.TextChangedEventArgs e)
         {
             try
             {
+                Settings.Xaml = editor.Text;
+
                 logAccess.Clear();
                 var parser = new Parser();
                 var rootNode = parser.Parse(e.NewTextValue);
