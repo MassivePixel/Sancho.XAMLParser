@@ -21,23 +21,25 @@ namespace SimpleXamlParser
             dom.Logger = Logger;
         }
 
-        public void Parse(string xaml)
+        public XamlNode Parse(string xaml)
         {
             if (string.IsNullOrWhiteSpace(xaml))
             {
                 Logger("The specified XAML is empty");
-                return;
+                return null;
             }
 
             var doc = XDocument.Parse(xaml);
             if (doc == null)
             {
                 Logger("Cannot parse xaml");
-                return;
+                return null;
             }
 
             var root = ParseNode(doc.Root);
+            // TODO: extract DOM creation outside of parser
             dom.AddNode(root);
+            return root;
         }
 
         public static XamlNode ParseNode(XElement element)
@@ -55,6 +57,7 @@ namespace SimpleXamlParser
                     {
                         if (child.HasElements)
                         {
+                            // TODO: do this as an extra pass rather than here
                             if (IsContentNode(element, child))
                             {
                                 node.Children.AddRange(child.Elements()
@@ -62,20 +65,12 @@ namespace SimpleXamlParser
                             }
                             else
                             {
-                                node.Properties.Add(new XamlProperty
-                                {
-                                    Name = child.Name.LocalName.Substring(child.Name.LocalName.LastIndexOf(".") + 1),
-                                    Value = ParseNodes(child.Elements())
-                                });
+                                node.Properties.Add(new XamlNodesProperty(child.Name, ParseNodes(child.Elements())));
                             }
                         }
                         else if (!string.IsNullOrEmpty(child.Value))
                         {
-                            node.Properties.Add(new XamlProperty
-                            {
-                                Name = child.Name.LocalName.Substring(child.Name.LocalName.LastIndexOf(".") + 1),
-                                Value = child.Value
-                            });
+                            node.Properties.Add(new XamlStringProperty(child.Value));
                         }
                     }
                     else
@@ -86,25 +81,19 @@ namespace SimpleXamlParser
             }
             else if (!string.IsNullOrEmpty(element.Value))
             {
-                node.Properties.Add(new XamlProperty
-                {
-                    Value = element.Value
-                });
+                node.Properties.Add(new XamlStringProperty(element.Value));
             }
 
             return node;
         }
 
-        static XamlNodeCollection ParseNodes(IEnumerable<XElement> elements)
-        => new XamlNodeCollection(elements.Select(el => ParseNode(el)));
+        static IEnumerable<XamlNode> ParseNodes(IEnumerable<XElement> elements)
+        => elements.Select(el => ParseNode(el));
 
         public static XamlProperty ParseAttribute(XElement element, XAttribute attribute)
-        => new XamlProperty
-        {
-            Name = attribute.Name.LocalName,
-            Value = attribute.Value
-        };
+        => new XamlStringProperty(attribute.Name, attribute.Value);
 
+        // TODO: extract
         public static bool IsContentNode(XElement element, XElement child)
         {
             var lastDot = child?.Name?.LocalName?.LastIndexOf(".");

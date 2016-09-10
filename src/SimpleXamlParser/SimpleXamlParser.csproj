@@ -38,10 +38,10 @@
     <Compile Include="Interfaces\IXamlDOM.cs" />
     <Compile Include="XamlNode.cs" />
     <Compile Include="XamlProperty.cs" />
-    <Compile Include="XamlNodeCollection.cs" />
     <Compile Include="XamlDOMCreator.cs" />
     <Compile Include="ReflectionHelpers.cs" />
     <Compile Include="AttributeHelper.cs" />
+    <Compile Include="Extensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Xamarin.Forms.Core">

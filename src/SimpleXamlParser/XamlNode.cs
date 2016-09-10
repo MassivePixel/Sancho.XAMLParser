@@ -17,7 +17,18 @@ namespace SimpleXamlParser
 
         public override string ToString()
         {
-            return string.Format("[XamlNode: Name={0}, Children={1}, Properties={2}]", Name, Children, Properties);
+            return string.Format("[Name={0}, Children={1}, Properties={2}]",
+                                 Name,
+                                 Children.Count == 0
+                                 ? "{ }"
+                                 : Children.Count == 1
+                                 ? $"{{ {Children[0]} }}"
+                                 : $"{{ {Children[0]}, ... }}",
+                                 Properties.Count == 0
+                                 ? "{}"
+                                 : Properties.Count == 1
+                                 ? $"{{ {Properties[0]} }}"
+                                 : $"{{ {Properties[0]}, ... }}");
         }
     }
 }

@@ -67,50 +67,54 @@ namespace SimpleXamlParser
         {
             if (string.IsNullOrWhiteSpace(xamlProperty.Name))
             {
-                if (xamlProperty.Value is string)
+                if (xamlProperty is XamlStringProperty)
                 {
                     var contentProp = ReflectionHelpers.GetContentProperty(parent.GetType());
                     if (contentProp != null &&
                         contentProp.PropertyType == typeof(string))
                     {
-                        contentProp.SetValue(parent, xamlProperty.Value);
+                        contentProp.SetValue(parent, xamlProperty.GetString());
                     }
                 }
-                else if (xamlProperty.Value is XamlNode)
+                else if (xamlProperty is XamlNodesProperty)
                 {
-                    var view = CreateNode((XamlNode)xamlProperty.Value) as View;
-                    if (view != null)
-                        AddToParent(parent, view);
-                }
-                else if (xamlProperty.Value is XamlNodeCollection)
-                {
-                    foreach (var node in ((XamlNodeCollection)xamlProperty.Value).Nodes)
+                    var nodes = xamlProperty.GetNodes();
+                    if (nodes.Count == 1)
                     {
-                        var view = CreateNode((XamlNode)xamlProperty.Value) as View;
+                        var view = CreateNode(nodes[0]) as View;
                         if (view != null)
                             AddToParent(parent, view);
+                    }
+                    else if (nodes.Any())
+                    {
+                        foreach (var node in nodes)
+                        {
+                            var view = CreateNode(node) as View;
+                            if (view != null)
+                                AddToParent(parent, view);
+                        }
                     }
                 }
             }
             else if (xamlProperty.Name.Contains("."))
             {
-                HandleAttachedProperty(parent as VisualElement, xamlProperty.Name, xamlProperty.Value as string);
+                HandleAttachedProperty(parent as VisualElement, xamlProperty.Name, xamlProperty.GetString());
             }
             else
             {
                 var prop = parent.GetType().GetRuntimeProperty(xamlProperty.Name);
                 if (prop != null)
                 {
-                    if (xamlProperty.Value is string)
+                    if (xamlProperty is XamlStringProperty)
                     {
-                        AttributeHelper.Apply(parent, prop, (string)xamlProperty.Value);
+                        AttributeHelper.Apply(parent, prop, xamlProperty.GetString());
                     }
-                    else if (xamlProperty.Value is XamlNodeCollection)
+                    else if (xamlProperty is XamlNodesProperty)
                     {
-                        var values = ((XamlNodeCollection)xamlProperty.Value).Nodes
-                                                                             .Select(node => CreateNode(node))
-                                                                             .Where(v => v != null)
-                                                                             .ToList();
+                        var values = xamlProperty.GetNodes()
+                                                 .Select(node => CreateNode(node))
+                                                 .Where(v => v != null)
+                                                 .ToList();
 
                         if (typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(prop.PropertyType.GetTypeInfo()))
                         {
@@ -209,8 +213,8 @@ namespace SimpleXamlParser
                 var typeArgumentProperty = node.Properties.FirstOrDefault(p => p.Name == "TypeArguments");
                 if (typeArgumentProperty != null)
                 {
-                    var typeArgument = ReflectionHelpers.GetType(typeArgumentProperty.Value as string) ??
-                                       ReflectionHelpers.GetAllType(typeArgumentProperty.Value as string);
+                    var typeArgument = ReflectionHelpers.GetType(typeArgumentProperty.GetString() as string) ??
+                                       ReflectionHelpers.GetAllType(typeArgumentProperty.GetString() as string);
                     if (typeArgument != null)
                     {
                         type = type.MakeGenericType(new[] { typeArgument });
@@ -229,8 +233,23 @@ namespace SimpleXamlParser
             return null;
         }
 
-        public void HandleAttachedProperty(VisualElement view, string property, string value)
+        public void HandleAttachedProperty(object o, string property, string value)
         {
+            if (o == null)
+            {
+                Logger("Target object is null");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(property))
+            {
+                Logger("Invalid property name.");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                Logger("Ignoring null value for property");
+            }
+
             var parts = property.Split(new[] { '.' });
 
             if (parts.Length != 2)
@@ -249,17 +268,50 @@ namespace SimpleXamlParser
             var method = methods.FirstOrDefault(x => x.Name == $"Set{parts[1]}");
             if (method == null)
             {
-                Logger($"Cannot find setter method for attached property {parts[1]} on type {parts[0]}");
+                Logger($"Cannot find setter method for attached property '{parts[1]}' on type '{parts[0]}'");
                 return;
             }
 
             var parameters = method.GetParameters();
+            if (parameters.Length != 2)
+            {
+                Logger($"Invalid number of arguments for method '{method.Name}': got {parameters.Length}, expected 2");
+                return;
+            }
 
-            object converted;
-            if (AttributeHelper.Parse(parameters[1].ParameterType, value, out converted))
-                method.Invoke(null, new object[] { view, converted });
-            else
+            if (!parameters[0].ParameterType.GetTypeInfo().IsAssignableFrom(o.GetType().GetTypeInfo()))
+            {
+                Logger($"Setter method expected '{parameters[0].ParameterType.FullName}', provided object was of type '{o.GetType().FullName}'");
+                return;
+            }
+
+            object parsed;
+            if (!AttributeHelper.Parse(parameters[1].ParameterType, value, out parsed))
+            {
                 Logger($"Cannot parse value '{value}' for attached property {property}");
+                return;
+            }
+
+            if (parsed == null)
+            {
+                Logger($"Ignoring null values for attached property {property}");
+                return;               
+            }
+
+            if (!parameters[1].ParameterType.GetTypeInfo().IsAssignableFrom(parsed.GetType().GetTypeInfo()))
+            {
+                Logger($"Invalid parsed value type. Expected '{parameters[1].ParameterType.FullName}', got '{parsed.GetType().FullName}'");
+                return;
+            }
+
+            try
+            {
+                method.Invoke(null, new object[] { o, parsed });
+            }
+            catch (Exception ex)
+            {
+                Logger(ex.ToString());
+            }
         }
     }
 }
