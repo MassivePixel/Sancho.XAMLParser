@@ -18,7 +18,7 @@ namespace TabletDesigner.iOS.Services
 
             Serilog.Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .WriteTo.TextWriter(messages, outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level}] {Message}{NewLine}{Exception}")
+                .WriteTo.TextWriter(messages, outputTemplate: "[{Level}] {Message}{NewLine}{Exception}")
                 .CreateLogger();
 
             Serilog.Log.Information("Started...");
