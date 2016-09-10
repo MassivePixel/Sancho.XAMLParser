@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Sancho.XAMLParser.Interfaces;
+using Serilog;
 using Xamarin.Forms;
 
 namespace Sancho.DOM.XamarinForms
@@ -87,7 +88,7 @@ namespace Sancho.DOM.XamarinForms
         {
             if (name.Contains("."))
                 return AllTypes.FirstOrDefault(x => x.Value.FullName.EndsWith(name)).Value;
-            
+
             Type type;
             if (AllTypes.TryGetValue(name, out type))
                 return type;
@@ -151,6 +152,39 @@ namespace Sancho.DOM.XamarinForms
             }
 
             return prop;
+        }
+
+        static Dictionary<PropertyInfo, TypeConverter> PropertyTypeConverters = new Dictionary<PropertyInfo, TypeConverter>();
+
+        public static TypeConverter GetTypeConverterForProperty(PropertyInfo prop)
+        {
+            TypeConverter converter = PropertyTypeConverters.FirstOrDefault(x => x.Key == prop).Value;
+
+            if (converter != null)
+                return converter;
+
+            var typeConverterAttr = prop.GetCustomAttribute<TypeConverterAttribute>();
+            if (typeConverterAttr != null)
+            {
+                var typeConverterTypeName = typeConverterAttr.ConverterTypeName;
+
+                if (typeConverterTypeName.Contains(","))
+                    typeConverterTypeName = typeConverterTypeName.Split(new[] { ',' })[0].Trim();
+
+                Log.Debug($"Property {prop.DeclaringType.FullName}.{prop.Name} has a custom type converter {typeConverterTypeName}");
+                var typeConverterType = ReflectionHelpers.GetAllType(typeConverterTypeName);
+                if (typeConverterType == null)
+                {
+                    Log.Error($"Cannot find type for {typeConverterTypeName}");
+                }
+                else
+                {
+                    converter = Activator.CreateInstance(typeConverterType) as TypeConverter;
+                    PropertyTypeConverters.Add(prop, converter);
+                }
+            }
+
+            return converter;
         }
     }
 }

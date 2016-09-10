@@ -29,33 +29,10 @@ namespace Sancho.DOM.XamarinForms
                 }
                 else
                 {
-                    var typeConverterAttr = prop.GetCustomAttribute<TypeConverterAttribute>();
-                    if (typeConverterAttr != null)
+                    var converter = ReflectionHelpers.GetTypeConverterForProperty(prop);
+                    if (converter != null)
                     {
-                        var typeConverterTypeName = typeConverterAttr.ConverterTypeName;
-
-                        if (typeConverterTypeName.Contains(","))
-                            typeConverterTypeName = typeConverterTypeName.Split(new[] { ',' })[0].Trim();
-
-                        Log.Debug($"Property {prop.Name} has a custom type converter {typeConverterTypeName}");
-                        var typeConverterType = ReflectionHelpers.GetAllType(typeConverterTypeName);
-                        if (typeConverterType == null)
-                        {
-                            Log.Error($"Cannot find type for {typeConverterTypeName}");
-                        }
-                        else
-                        {
-                            var converter = Activator.CreateInstance(typeConverterType) as TypeConverter;
-                            if (converter == null)
-                            {
-                                Log.Error($"Cannot create an instance of {typeConverterTypeName}");
-                            }
-                            else
-                            {
-                                prop.SetValue(parent, converter.ConvertFromInvariantString(value));
-                                return true;
-                            }
-                        }
+                        prop.SetValue(parent, converter.ConvertFromInvariantString(value));
                     }
                     else if (!Parse(prop.PropertyType, value, out parsedValue))
                     {
