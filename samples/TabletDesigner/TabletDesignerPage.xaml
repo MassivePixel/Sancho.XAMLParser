@@ -11,20 +11,23 @@
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="3*" />
 			<ColumnDefinition Width="2*" />
-			<ColumnDefinition Width="*" />
 		</Grid.ColumnDefinitions>
 		
 		<Editor x:Name="editor"
 				FontFamily="Courier New"
 				TextChanged="Handle_TextChanged"
 				/>
-		<Label Grid.Column="1" x:Name="LoggerOutput"
-			   FontFamily="Courier New"
-			   BackgroundColor="#FDFDFD"
-			   LineBreakMode="WordWrap"
-			   FontSize="Micro"
-			   />
+		<ScrollView Grid.Column="1">
+			<Label x:Name="LoggerOutput"
+				   FontFamily="Courier New"
+				   BackgroundColor="#000000"
+				   TextColor="Green"
+				   LineBreakMode="WordWrap"
+				   FontSize="Micro"
+				   />
+		</ScrollView>
 		
 		<ContentView Grid.Row="1" Grid.ColumnSpan="2" x:Name="Root" />
 		

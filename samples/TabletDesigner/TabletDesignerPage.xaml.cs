@@ -42,12 +42,12 @@ namespace TabletDesigner
                 Root.Content = view;
 
                 LoggerOutput.Text = logAccess.Log;
-                LoggerOutput.TextColor = Color.Black;
+                LoggerOutput.TextColor = Color.White;
             }
             catch (Exception ex)
             {
                 LoggerOutput.Text = ex.ToString();
-                LoggerOutput.TextColor = Color.Red;
+                LoggerOutput.TextColor = Color.FromHex("#FF3030");
             }
         }
     }
