@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentPage
+		xmlns="http://xamarin.com/schemas/2014/forms"
+		xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+		xmlns:local="clr-namespace:TabletDesigner"
+		x:Class="TabletDesigner.TabletDesignerPage">
+	
+	<Grid Padding="0,20,0,0">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="2*" />
+			<ColumnDefinition Width="*" />
+		</Grid.ColumnDefinitions>
+		
+		<Editor x:Name="editor"
+				FontFamily="Courier New"
+				TextChanged="Handle_TextChanged"
+				/>
+		<Label Grid.Column="1" x:Name="LoggerOutput"
+			   FontFamily="Courier New"
+			   BackgroundColor="#FDFDFD"
+			   LineBreakMode="WordWrap"
+			   FontSize="Micro"
+			   />
+		
+		<ContentView Grid.Row="1" Grid.ColumnSpan="2" x:Name="Root" />
+		
+	</Grid>
+	
+</ContentPage>

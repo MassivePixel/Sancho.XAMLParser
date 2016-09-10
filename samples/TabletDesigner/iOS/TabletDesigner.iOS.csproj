@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
+    <ProjectGuid>{E0571C18-27B2-4601-9E1E-D7CC6DABDA30}</ProjectGuid>
+    <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>TabletDesigner.iOS</RootNamespace>
+    <AssemblyName>TabletDesigner.iOS</AssemblyName>
+    <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\iPhoneSimulator\Debug</OutputPath>
+    <DefineConstants>DEBUG;ENABLE_TEST_CLOUD;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CodesignKey>iPhone Developer</CodesignKey>
+    <MtouchDebug>true</MtouchDebug>
+    <MtouchFastDev>true</MtouchFastDev>
+    <MtouchProfiling>true</MtouchProfiling>
+    <MtouchUseSGen>true</MtouchUseSGen>
+    <MtouchUseRefCounting>true</MtouchUseRefCounting>
+    <MtouchLink>None</MtouchLink>
+    <MtouchArch>i386</MtouchArch>
+    <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
+    <MtouchTlsProvider>Default</MtouchTlsProvider>
+    <DeviceSpecificBuild>false</DeviceSpecificBuild>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\iPhone\Release</OutputPath>
+    <DefineConstants></DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CodesignKey>iPhone Developer</CodesignKey>
+    <MtouchUseSGen>true</MtouchUseSGen>
+    <MtouchUseRefCounting>true</MtouchUseRefCounting>
+    <MtouchFloat32>true</MtouchFloat32>
+    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    <MtouchLink>SdkOnly</MtouchLink>
+    <MtouchArch>ARMv7, ARM64</MtouchArch>
+    <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
+    <MtouchTlsProvider>Default</MtouchTlsProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
+    <DefineConstants></DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CodesignKey>iPhone Developer</CodesignKey>
+    <MtouchUseSGen>true</MtouchUseSGen>
+    <MtouchUseRefCounting>true</MtouchUseRefCounting>
+    <MtouchLink>None</MtouchLink>
+    <MtouchArch>i386</MtouchArch>
+    <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
+    <MtouchTlsProvider>Default</MtouchTlsProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\iPhone\Debug</OutputPath>
+    <DefineConstants>DEBUG;ENABLE_TEST_CLOUD;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CodesignKey>iPhone Developer</CodesignKey>
+    <DeviceSpecificBuild>true</DeviceSpecificBuild>
+    <MtouchDebug>true</MtouchDebug>
+    <MtouchFastDev>true</MtouchFastDev>
+    <MtouchProfiling>true</MtouchProfiling>
+    <MtouchUseSGen>true</MtouchUseSGen>
+    <MtouchUseRefCounting>true</MtouchUseRefCounting>
+    <MtouchFloat32>true</MtouchFloat32>
+    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    <MtouchLink>SdkOnly</MtouchLink>
+    <MtouchArch>ARMv7, ARM64</MtouchArch>
+    <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
+    <MtouchTlsProvider>Default</MtouchTlsProvider>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="Xamarin.iOS" />
+    <Reference Include="Xamarin.Forms.Platform.iOS">
+      <HintPath>..\..\..\packages\Xamarin.Forms.2.3.1.114\lib\Xamarin.iOS10\Xamarin.Forms.Platform.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Forms.Core">
+      <HintPath>..\..\..\packages\Xamarin.Forms.2.3.1.114\lib\Xamarin.iOS10\Xamarin.Forms.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Forms.Xaml">
+      <HintPath>..\..\..\packages\Xamarin.Forms.2.3.1.114\lib\Xamarin.iOS10\Xamarin.Forms.Xaml.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Forms.Platform">
+      <HintPath>..\..\..\packages\Xamarin.Forms.2.3.1.114\lib\Xamarin.iOS10\Xamarin.Forms.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Serilog">
+      <HintPath>..\..\..\packages\Serilog.2.2.1\lib\netstandard1.3\Serilog.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.TextWriter">
+      <HintPath>..\..\..\packages\Serilog.Sinks.TextWriter.2.0.0\lib\netstandard1.0\Serilog.Sinks.TextWriter.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Contents.json" />
+    <ImageAsset Include="Assets.xcassets\Contents.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterfaceDefinition Include="LaunchScreen.storyboard" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Info.plist" />
+    <None Include="Entitlements.plist" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Main.cs" />
+    <Compile Include="AppDelegate.cs" />
+    <Compile Include="Services\LogAccess.cs" />
+    <Compile Include="Services\PlatformServices.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TabletDesigner.csproj">
+      <Project>{BF1ABDF9-4B05-46EC-BFF4-5C157098D213}</Project>
+      <Name>TabletDesigner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\Sancho.XAMLParser\Sancho.XAMLParser.csproj">
+      <Project>{E8496901-E68F-466C-9FF9-32F71CC8B965}</Project>
+      <Name>Sancho.XAMLParser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\Sacho.DOM.XamarinForms\Sacho.DOM.XamarinForms.csproj">
+      <Project>{D0EDD907-6345-4C51-BB14-7CBBA52753D2}</Project>
+      <Name>Sacho.DOM.XamarinForms</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
+  <Import Project="..\..\..\packages\Xamarin.Forms.2.3.1.114\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets" Condition="Exists('..\..\..\packages\Xamarin.Forms.2.3.1.114\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets')" />
+</Project>
