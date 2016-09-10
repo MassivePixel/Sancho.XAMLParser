@@ -12,41 +12,41 @@ namespace Sancho.DOM.XamarinForms
     {
         public static bool Apply(object parent, PropertyInfo prop, string value)
         {
-            if (value.StartsWith("{"))
+            if (prop == null)
             {
-                // handle markup extensions
-                Log.Debug("Applying markup extension: {value}", value);
-                return ParseMarkupExtension(parent, prop, value);
-            }
-            else
-            {
-                // regular attributes are value
-                Log.Debug("Applying regular property: {property}", value);
-                object parsedValue;
-                if (!prop.CanWrite)
-                {
-                    Log.Error($"Property {prop.Name} is read-only");
-                }
-                else
-                {
-                    var converter = ReflectionHelpers.GetTypeConverterForProperty(prop);
-                    if (converter != null)
-                    {
-                        prop.SetValue(parent, converter.ConvertFromInvariantString(value));
-                    }
-                    else if (!Parse(prop.PropertyType, value, out parsedValue))
-                    {
-                        Log.Error($"Unable to parse property value {value} for property type {prop.PropertyType.FullName}");
-                    }
-                    else
-                    {
-                        prop.SetValue(parent, parsedValue);
-                        return true;
-                    }
-                }
+                Log.Error("Property is null");
+                return false;   
             }
 
-            return false;
+            if (value.StartsWith("{"))
+            {
+                return ParseMarkupExtension(parent, prop, value);
+            }
+
+            // regular attributes are value
+            Log.Debug("Applying regular property: {property}", value);
+            if (!prop.CanWrite)
+            {
+                Log.Error($"Property {prop.Name} is read-only");
+                return false;
+            }
+
+            var converter = ReflectionHelpers.GetTypeConverterForProperty(prop);
+            if (converter != null)
+            {
+                prop.SetValue(parent, converter.ConvertFromInvariantString(value));
+                return true;
+            }
+
+            object parsedValue;
+            if (!Parse(prop.PropertyType, value, out parsedValue))
+            {
+                Log.Error($"Unable to parse property value {value} for property type {prop.PropertyType.FullName}");
+                return false;
+            }
+
+            prop.SetValue(parent, parsedValue);
+            return true;
         }
 
         public static bool Parse(Type propertyType, string attributeValue, out object value)
@@ -144,6 +144,8 @@ namespace Sancho.DOM.XamarinForms
                 Log.Error($"Invalid markup extension '{value}'");
                 return false;
             }
+
+            Log.Debug("Applying markup extension: {value}", value);
 
             // remove before parsing
             value = value.Trim(new[] { '{', '}' });
