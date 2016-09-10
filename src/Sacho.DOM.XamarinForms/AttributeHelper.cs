@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Serilog;
 using Xamarin.Forms;
 
 namespace Sancho.DOM.XamarinForms
@@ -14,14 +15,23 @@ namespace Sancho.DOM.XamarinForms
             if (value.StartsWith("{"))
             {
                 // handle markup extensions
+                Log.Debug("Applying markup extension: {value}", value);
                 return ParseMarkupExtension(parent, prop, value);
             }
             else
             {
                 // regular attributes are value
+                Log.Debug("Applying regular property: {property}", value);
                 object parsedValue;
-                if (Parse(prop.PropertyType, value, out parsedValue) &&
-                    prop.CanWrite)
+                if (!prop.CanWrite)
+                {
+                    Log.Error($"Property {prop.Name} is read-only");
+                }
+                else if (!Parse(prop.PropertyType, value, out parsedValue))
+                {
+                    Log.Error($"Unable to parse property value {value} for property type {prop.PropertyType.FullName}");
+                }
+                else
                 {
                     prop.SetValue(parent, parsedValue);
                     return true;
@@ -111,19 +121,29 @@ namespace Sancho.DOM.XamarinForms
 
         public static bool ParseMarkupExtension(object parent, PropertyInfo prop, string value)
         {
-            if (value.StartsWith("{") &&
-                value.EndsWith("}"))
+            if (!value.StartsWith("{") || !value.EndsWith("}"))
             {
-                value = value.Trim(new[] { '{', '}' });
+                Log.Error($"Invalid markup extension '{value}'");
+                return false;
             }
+
+            // remove before parsing
+            value = value.Trim(new[] { '{', '}' });
 
             var firstSpace = value.IndexOf(' ');
             var extension = firstSpace == -1 ? value : value.Substring(0, firstSpace);
             var rest = firstSpace == -1 ? string.Empty : value.Substring(firstSpace + 1);
-            if (extension == "Binding")
-                return ParseBinding(parent as BindableObject, prop, rest);
 
-            return false;
+            switch (extension)
+            {
+                case "Binding":
+                    Log.Debug("Parsing Binding markup extension");
+                    return ParseBinding(parent as BindableObject, prop, rest);
+
+                default:
+                    Log.Error($"Unknown markup extension {extension}");
+                    return false;
+            }
         }
 
         public static bool ParseBinding(BindableObject bo, PropertyInfo prop, string rest)
@@ -134,15 +154,19 @@ namespace Sancho.DOM.XamarinForms
                                    .OfType<BindableProperty>()
                                    .FirstOrDefault(bp => bp.PropertyName == prop.Name);
 
-            if (targetProperty != null)
+            if (targetProperty == null)
+            { 
+                Log.Error($"No target property named {prop.Name}");
+                return false;
+            }
+            else
             {
+                Log.Debug($"Creating Binding for '{rest}'");
                 var binding = string.IsNullOrWhiteSpace(rest) ? new Binding(".") : new Binding(rest);
                 bo.SetBinding(targetProperty, binding);
 
                 return true;
             }
-
-            return false;
         }
     }
 }
