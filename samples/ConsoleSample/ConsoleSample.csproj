@@ -48,7 +48,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\SimpleXamlParser\SimpleXamlParser.csproj">
       <Project>{E8496901-E68F-466C-9FF9-32F71CC8B965}</Project>
-      <Name>SimpleXamlParser</Name>
+      <Name>Sancho.XAMLParser</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

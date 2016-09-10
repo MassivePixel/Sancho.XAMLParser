@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2564873C-D81B-4DD4-BCD3-DECD733F5D79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleXamlParser", "src\SimpleXamlParser\SimpleXamlParser.csproj", "{E8496901-E68F-466C-9FF9-32F71CC8B965}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sancho.XAMLParser", "src\SimpleXamlParser\Sancho.XAMLParser.csproj", "{E8496901-E68F-466C-9FF9-32F71CC8B965}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{166256ED-BED2-40F8-BF8B-0BA37E2CE8A6}"
 EndProject
