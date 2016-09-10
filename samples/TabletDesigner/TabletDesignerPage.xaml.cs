@@ -41,8 +41,11 @@ namespace TabletDesigner
                 rootNode = new ContentNodeProcessor().Process(rootNode);
                 rootNode = new ExpandedPropertiesProcessor().Process(rootNode);
 
-                var view = new XamlDOMCreator().CreateNode(rootNode) as View;
-                Root.Content = view;
+                var dom = new XamlDOMCreator().CreateNode(rootNode);
+                if (dom is View)
+                    Root.Content = (View)dom;
+                else if (dom is ContentPage)
+                    Root.Content = ((ContentPage)dom).Content;
 
                 LoggerOutput.Text = logAccess.Log;
                 LoggerOutput.TextColor = Color.White;
