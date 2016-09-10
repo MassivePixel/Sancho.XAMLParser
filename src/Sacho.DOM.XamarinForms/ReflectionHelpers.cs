@@ -73,6 +73,9 @@ namespace Sancho.DOM.XamarinForms
 
         public static Type GetType(string name)
         {
+            if (name.Contains("."))
+                return VisualElementTypes.FirstOrDefault(x => x.Value.FullName.EndsWith(name)).Value;
+
             Type type;
             if (VisualElementTypes.TryGetValue(name, out type))
                 return type;
@@ -82,6 +85,9 @@ namespace Sancho.DOM.XamarinForms
 
         public static Type GetAllType(string name)
         {
+            if (name.Contains("."))
+                return AllTypes.FirstOrDefault(x => x.Value.FullName.EndsWith(name)).Value;
+            
             Type type;
             if (AllTypes.TryGetValue(name, out type))
                 return type;
