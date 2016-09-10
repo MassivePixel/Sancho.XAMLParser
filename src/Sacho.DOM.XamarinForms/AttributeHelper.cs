@@ -27,14 +27,45 @@ namespace Sancho.DOM.XamarinForms
                 {
                     Log.Error($"Property {prop.Name} is read-only");
                 }
-                else if (!Parse(prop.PropertyType, value, out parsedValue))
-                {
-                    Log.Error($"Unable to parse property value {value} for property type {prop.PropertyType.FullName}");
-                }
                 else
                 {
-                    prop.SetValue(parent, parsedValue);
-                    return true;
+                    var typeConverterAttr = prop.GetCustomAttribute<TypeConverterAttribute>();
+                    if (typeConverterAttr != null)
+                    {
+                        var typeConverterTypeName = typeConverterAttr.ConverterTypeName;
+
+                        if (typeConverterTypeName.Contains(","))
+                            typeConverterTypeName = typeConverterTypeName.Split(new[] { ',' })[0].Trim();
+
+                        Log.Debug($"Property {prop.Name} has a custom type converter {typeConverterTypeName}");
+                        var typeConverterType = ReflectionHelpers.GetAllType(typeConverterTypeName);
+                        if (typeConverterType == null)
+                        {
+                            Log.Error($"Cannot find type for {typeConverterTypeName}");
+                        }
+                        else
+                        {
+                            var converter = Activator.CreateInstance(typeConverterType) as TypeConverter;
+                            if (converter == null)
+                            {
+                                Log.Error($"Cannot create an instance of {typeConverterTypeName}");
+                            }
+                            else
+                            {
+                                prop.SetValue(parent, converter.ConvertFromInvariantString(value));
+                                return true;
+                            }
+                        }
+                    }
+                    else if (!Parse(prop.PropertyType, value, out parsedValue))
+                    {
+                        Log.Error($"Unable to parse property value {value} for property type {prop.PropertyType.FullName}");
+                    }
+                    else
+                    {
+                        prop.SetValue(parent, parsedValue);
+                        return true;
+                    }
                 }
             }
 
@@ -99,6 +130,16 @@ namespace Sancho.DOM.XamarinForms
                 return false;
             }
 
+            if (TryApplyTypeConverter(propertyType, attributeValue, out value))
+                return true;
+
+            return false;
+        }
+
+        public static bool TryApplyTypeConverter(Type propertyType, string attributeValue, out object value)
+        {
+            value = null;
+
             var typeConverter = ReflectionHelpers.GetTypeConverter(propertyType);
             if (typeConverter == null)
             {
@@ -155,7 +196,7 @@ namespace Sancho.DOM.XamarinForms
                                    .FirstOrDefault(bp => bp.PropertyName == prop.Name);
 
             if (targetProperty == null)
-            { 
+            {
                 Log.Error($"No target property named {prop.Name}");
                 return false;
             }
