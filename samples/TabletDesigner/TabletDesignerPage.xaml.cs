@@ -47,14 +47,77 @@ namespace TabletDesigner
                 else if (dom is ContentPage)
                     Root.Content = ((ContentPage)dom).Content;
 
-                LoggerOutput.Text = logAccess.Log;
+                LoggerOutput.FormattedText = FormatLog(logAccess.Log);
                 LoggerOutput.TextColor = Color.White;
             }
             catch (Exception ex)
             {
-                LoggerOutput.Text = ex.ToString();
+                LoggerOutput.FormattedText = FormatException(ex);
                 LoggerOutput.TextColor = Color.FromHex("#FF3030");
             }
+        }
+
+        FormattedString FormatLog(string log)
+        {
+            var fs = new FormattedString();
+            var lines = log.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var line in lines)
+            {
+                fs.Spans.Add(new Span
+                {
+                    Text = line + Environment.NewLine,
+                    FontFamily = LoggerOutput.FontFamily,
+                    FontSize = LoggerOutput.FontSize,
+                    ForegroundColor = GetOutputColor(line)
+                });
+            }
+            return fs;
+        }
+
+        Color GetOutputColor(string line)
+        {
+            if (line.Contains("[Warning]"))
+                return Color.FromHex("#FFA500");
+            if (line.Contains("[Error]"))
+                return Color.Red;
+
+            return Color.White;
+        }
+
+        FormattedString FormatException(Exception ex)
+        {
+            var fs = new FormattedString();
+            while (ex != null)
+            {
+                fs.Spans.Add(new Span
+                {
+                    Text = ex.Message + Environment.NewLine,
+                    ForegroundColor = Color.Red,
+                    FontFamily = LoggerOutput.FontFamily,
+                    FontSize = LoggerOutput.FontSize,
+                });
+                fs.Spans.Add(new Span
+                {
+                    Text = ex.StackTrace + Environment.NewLine,
+                    ForegroundColor = Color.Red,
+                    FontFamily = LoggerOutput.FontFamily,
+                    FontSize = LoggerOutput.FontSize,
+                });
+
+                if (ex.InnerException != null)
+                {
+                   fs.Spans.Add(new Span
+                   {
+                       Text = "--" + Environment.NewLine,
+                       ForegroundColor = Color.Red,
+                       FontFamily = LoggerOutput.FontFamily,
+                       FontSize = LoggerOutput.FontSize,
+                   }); 
+                }
+
+                ex = ex.InnerException;
+            }
+            return fs;
         }
     }
 }
