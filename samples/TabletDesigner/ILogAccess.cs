@@ -1,8 +1,4 @@
-using System;
-using Sancho.DOM.XamarinForms;
-using Sancho.XAMLParser;
-using TabletDesigner.Helpers;
-using Xamarin.Forms;
+// Copyright (c) Massive Pixel.  All Rights Reserved.  Licensed under the MIT License (MIT). See License.txt in the project root for license information.
 
 namespace TabletDesigner
 {
@@ -11,5 +7,4 @@ namespace TabletDesigner
         void Clear();
         string Log { get; }
     }
-    
 }
