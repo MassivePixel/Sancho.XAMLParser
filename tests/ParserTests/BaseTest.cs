@@ -46,7 +46,8 @@ namespace XamarinFormsTests
             var rootNode = parser.Parse(xaml);
             rootNode = new ContentNodeProcessor().Process(rootNode);
             rootNode = new ExpandedPropertiesProcessor().Process(rootNode);
-            return dom.CreateNode(rootNode) as T;
+            dom.AddNode(rootNode);
+            return dom.Root as T;
         }
     }
 }

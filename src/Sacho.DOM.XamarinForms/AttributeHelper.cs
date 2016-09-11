@@ -54,6 +54,12 @@ namespace Sancho.DOM.XamarinForms
         {
             value = null;
 
+            if (propertyType == typeof(object))
+            {
+                value = attributeValue;
+                return true;
+            }
+
             if (propertyType == typeof(string))
             {
                 value = attributeValue;
@@ -211,9 +217,21 @@ namespace Sancho.DOM.XamarinForms
 
             if (container == null)
                 res = xamlServices.GetResource(rest);
+
             if (res != null)
             {
-                prop.SetValue(parent, res);
+                var resType = res.GetType();
+                if (resType.GetTypeInfo().IsGenericType &&
+                    resType.GetGenericTypeDefinition() == typeof(OnPlatform<>))
+                {
+                    var method = resType.GetRuntimeMethod("op_Implicit", new[] { resType });
+                    res = method.Invoke(res, new[] { res });
+                }
+
+                if (res != null)
+                {
+                    prop.SetValue(parent, res);
+                }
             }
 
             return true;

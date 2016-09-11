@@ -30,7 +30,7 @@ namespace XamarinFormsTests
                 }
             };
 
-            AttributeHelper.Apply(label, label.GetType().GetProperty("Text"), "{Binding X}");
+            new XamlDOMCreator().Apply(label, label.GetType().GetProperty("Text"), "{Binding X}");
             Assert.Equal("hello", label.Text);
         }
 
@@ -42,7 +42,7 @@ namespace XamarinFormsTests
                 BindingContext = "hello"
             };
 
-            AttributeHelper.Apply(label, label.GetType().GetProperty("Text"), "{Binding}");
+            new XamlDOMCreator().Apply(label, label.GetType().GetProperty("Text"), "{Binding}");
             Assert.Equal("hello", label.Text);
         }
 
@@ -54,7 +54,7 @@ namespace XamarinFormsTests
                 BindingContext = "hello"
             };
 
-            AttributeHelper.Apply(label, label.GetType().GetProperty("Text"), "{Binding .}");
+            new XamlDOMCreator().Apply(label, label.GetType().GetProperty("Text"), "{Binding .}");
             Assert.Equal("hello", label.Text);
         }
     }

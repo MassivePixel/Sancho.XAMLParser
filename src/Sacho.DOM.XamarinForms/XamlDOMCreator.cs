@@ -21,6 +21,11 @@ namespace Sancho.DOM.XamarinForms
 
         Dictionary<XamlNode, object> nodeToElementMapper = new Dictionary<XamlNode, object>();
 
+        public XamlDOMCreator()
+        {
+            Log.Verbose($"{nameof(XamlDOMCreator)} created");
+        }
+
         public XamlDOMCreator(IXamlServices services)
         {
             xamlServices = services;
@@ -79,7 +84,7 @@ namespace Sancho.DOM.XamarinForms
 
         void AddChild(object parent, XamlNode node)
         {
-            var element = CreateNode(node);
+            var element = CreateNode(node, parent);
 
             if (parent == null)
             {
@@ -90,6 +95,11 @@ namespace Sancho.DOM.XamarinForms
             {
                 Log.Debug("Adding {element} as child to parent", element);
                 AddToParent(parent, (View)element);
+            }
+            else if (element is Setter)
+            {
+                if (parent is Style)
+                    ((Style)parent).Setters.Add((Setter)element);
             }
             else if (element is ResourceDictionary)
             {
@@ -340,16 +350,16 @@ namespace Sancho.DOM.XamarinForms
             }
         }
 
-        object CreateNode(XamlNode node)
+        object CreateNode(XamlNode node, object parent = null)
         {
-            var element = CreateNodeInternal(node);
+            var element = CreateNodeInternal(node, parent);
             if (element != null)
                 nodeToElementMapper.Add(node, element);
 
             return element;
         }
 
-        object CreateNodeInternal(XamlNode node)
+        object CreateNodeInternal(XamlNode node, object parent = null)
         {
             if (node == null)
             {
@@ -391,16 +401,82 @@ namespace Sancho.DOM.XamarinForms
                 var typeConverter = ReflectionHelpers.GetTypeConverter(type);
                 if (typeConverter != null && node.Properties.Any(p => p.IsContent))
                 {
+                    Log.Debug($"Node {{node}} is constructed via type converter {typeConverter.GetType().FullName}", node);
                     element = typeConverter.ConvertFromInvariantString(node.Properties.First(p => p.IsContent).GetString());
                 }
-                
+
+                if (type == typeof(Style))
+                {
+                    var targetTypeProp = node.Properties
+                                         .OfType<XamlStringProperty>()
+                                         .FirstOrDefault(p => p.Name == nameof(Style.TargetType));
+                    if (targetTypeProp == null)
+                    {
+                        Log.Error($"Invalid style, missing TargetType property");
+                        return null;
+                    }
+
+                    var targetType = ReflectionHelpers.GetType(targetTypeProp.GetString());
+                    if (targetType == null)
+                    {
+                        Log.Error($"Invalid target type for style: '{targetTypeProp.GetString()}'");
+                        return null;
+                    }
+
+                    Log.Debug($"Creating style for target type {targetType.FullName}");
+                    element = Activator.CreateInstance(type, new[] { targetType });
+                }
+
                 if (element == null)
                 {
                     element = Activator.CreateInstance(type);
                 }
 
-                foreach (var prop in node.Properties)
-                    ApplyProperty(element, prop);
+                if (element is Setter)
+                {
+                    var propertyProp = node.Properties.FirstOrDefault(p => p.Name == nameof(Setter.Property));
+                    BindableProperty setterProp = null;
+                    if (propertyProp != null)
+                    {
+                        if (parent is Style)
+                        {
+                            var targetType = ((Style)parent).TargetType;
+                            setterProp = targetType.GetRuntimeFields()
+                                                   .Select(field => field.GetValue(null))
+                                                   .OfType<BindableProperty>()
+                                                   .FirstOrDefault(bp => bp.PropertyName == propertyProp.GetString());
+
+                            if (setterProp != null)
+                                ((Setter)element).Property = setterProp;
+                        }
+                    }
+
+                    var valueProp = node.Properties
+                                        .FirstOrDefault(p => p.Name == nameof(Setter.Value));
+                    if (valueProp != null && setterProp != null)
+                    {
+                        typeConverter = setterProp.DeclaringType
+                                                  .GetRuntimeProperty(setterProp.PropertyName)
+                                                  .IfNotNull(p => ReflectionHelpers.GetTypeConverterForProperty(p));
+
+                        var value = valueProp.GetString();
+                        object converted;
+                        if (typeConverter != null)
+                        {
+                            converted = typeConverter.ConvertFromInvariantString(value);
+                            ((Setter)element).Value = converted;
+                        }
+                        else if (Parse(setterProp.ReturnType, value, out converted))
+                        {
+                            ((Setter)element).Value = converted;
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var prop in node.Properties)
+                        ApplyProperty(element, prop);
+                }
 
                 foreach (var child in node.Children)
                 {

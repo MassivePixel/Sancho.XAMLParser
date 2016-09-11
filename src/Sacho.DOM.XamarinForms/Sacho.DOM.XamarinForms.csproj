@@ -41,6 +41,8 @@
     <Compile Include="ExpandedPropertiesProcessor.cs" />
     <Compile Include="Interfaces\IXamlServices.cs" />
     <Compile Include="Interfaces\IXamlNodeProcessor.cs" />
+    <Compile Include="ContentViewInjector.cs" />
+    <Compile Include="XamlServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Xamarin.Forms.Core">

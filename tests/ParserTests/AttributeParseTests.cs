@@ -39,7 +39,7 @@ namespace XamarinFormsTests
         void TestConversion<T>(T expected, string input)
         {
             object value;
-            var can = AttributeHelper.Parse(typeof(T), input, out value);
+            var can = new XamlDOMCreator().Parse(typeof(T), input, out value);
             Assert.True(can);
             Assert.Equal(expected, (T)value);
         }

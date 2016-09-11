@@ -2,7 +2,6 @@
 
 using System;
 using Sancho.DOM.XamarinForms;
-using Sancho.XAMLParser;
 using TabletDesigner.Helpers;
 using Xamarin.Forms;
 
@@ -14,39 +13,19 @@ namespace TabletDesigner
         JSON
     }
 
-    public class XamlServices : IXamlServices
-    {
-        Page page;
-
-        public XamlServices(Page page)
-        {
-            this.page = page;
-        }
-
-        public object GetResource(string key)
-        {
-            object value = null;
-            if (page?.Resources?.TryGetValue(key, out value) == true)
-                return value;
-
-            if (Application.Current.Resources.TryGetValue(key, out value))
-                return value;
-
-            return null;
-        }
-    }
-
     public partial class TabletDesignerPage : ContentPage
     {
         ILogAccess logAccess;
         EditorArea currentArea;
 
-        JsonModel model;
+        ContentViewInjector cvi;
 
         public TabletDesignerPage()
         {
             InitializeComponent();
             logAccess = DependencyService.Get<ILogAccess>();
+
+            cvi = new ContentViewInjector(Root);
         }
 
         protected override void OnAppearing()
@@ -56,9 +35,9 @@ namespace TabletDesigner
             HandleJsonChanges(Settings.Json);
         }
 
-        void Editor_TextChanged(object sender, Xamarin.Forms.TextChangedEventArgs e)
+        void Editor_TextChanged(object sender, TextChangedEventArgs e)
         {
-            switch (this.currentArea)
+            switch (currentArea)
             {
                 case EditorArea.XAML:
                     Settings.Xaml = editor.Text;
@@ -77,23 +56,8 @@ namespace TabletDesigner
             try
             {
                 logAccess.Clear();
-                var parser = new Parser();
-                var rootNode = parser.Parse(text);
 
-                rootNode = new ContentNodeProcessor().Process(rootNode);
-                rootNode = new ExpandedPropertiesProcessor().Process(rootNode);
-
-                var creator = new XamlDOMCreator(new XamlServices(this));
-                creator.AddNode(rootNode);
-                var dom = creator.Root;
-
-                if (dom is View)
-                    Root.Content = (View)dom;
-                else if (dom is ContentPage)
-                    Root.Content = ((ContentPage)dom).Content;
-
-                if (Root.Content != null && model != null)
-                    Root.Content.BindingContext = model;
+                cvi.SetXaml(text);
 
                 LoggerOutput.FormattedText = FormatLog(logAccess.Log);
                 LoggerOutput.TextColor = Color.White;
@@ -111,9 +75,7 @@ namespace TabletDesigner
             {
                 logAccess.Clear();
 
-                model = JsonModel.Parse(text);
-                if (Root.Content != null)
-                    Root.Content.BindingContext = model;
+                cvi.SetBindingContext(JsonModel.Parse(text));
             }
             catch (Exception ex)
             {
