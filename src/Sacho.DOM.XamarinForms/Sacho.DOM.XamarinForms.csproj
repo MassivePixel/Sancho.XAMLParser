@@ -43,6 +43,7 @@
     <Compile Include="Interfaces\IXamlNodeProcessor.cs" />
     <Compile Include="ContentViewInjector.cs" />
     <Compile Include="XamlServices.cs" />
+    <Compile Include="BindableObjectHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Xamarin.Forms.Core">
