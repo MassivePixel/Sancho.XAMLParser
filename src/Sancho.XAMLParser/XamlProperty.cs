@@ -28,6 +28,8 @@ namespace Sancho.XAMLParser
     {
         public string Name { get; set; }
 
+        public bool IsContent => string.IsNullOrWhiteSpace(Name);
+
         public XamlProperty()
         {
         }

@@ -8,19 +8,20 @@ using Xamarin.Forms;
 
 namespace Sancho.DOM.XamarinForms
 {
-    public static class AttributeHelper
+    public partial class XamlDOMCreator
     {
-        public static bool Apply(object parent, PropertyInfo prop, string value)
+        public bool Apply(object parent, PropertyInfo prop, string value)
         {
             if (prop == null)
             {
                 Log.Error("Property is null");
-                return false;   
+                return false;
             }
 
             if (value.StartsWith("{"))
             {
-                return ParseMarkupExtension(parent, prop, value);
+                return false;
+                //return ParseMarkupExtension(parent, prop, value);
             }
 
             // regular attributes are value
@@ -49,7 +50,7 @@ namespace Sancho.DOM.XamarinForms
             return true;
         }
 
-        public static bool Parse(Type propertyType, string attributeValue, out object value)
+        public bool Parse(Type propertyType, string attributeValue, out object value)
         {
             value = null;
 
@@ -113,7 +114,7 @@ namespace Sancho.DOM.XamarinForms
             return false;
         }
 
-        public static bool TryApplyTypeConverter(Type propertyType, string attributeValue, out object value)
+        public bool TryApplyTypeConverter(Type propertyType, string attributeValue, out object value)
         {
             value = null;
 
@@ -137,7 +138,7 @@ namespace Sancho.DOM.XamarinForms
             return false;
         }
 
-        public static bool ParseMarkupExtension(object parent, PropertyInfo prop, string value)
+        public bool ParseMarkupExtension(object parent, PropertyInfo prop, string value)
         {
             if (!value.StartsWith("{") || !value.EndsWith("}"))
             {
@@ -160,13 +161,16 @@ namespace Sancho.DOM.XamarinForms
                     Log.Debug("Parsing Binding markup extension");
                     return ParseBinding(parent as BindableObject, prop, rest);
 
+                case "StaticResource":
+                    return ParseStaticResource(parent, prop, rest);
+
                 default:
                     Log.Error($"Unknown markup extension {extension}");
                     return false;
             }
         }
 
-        public static bool ParseBinding(BindableObject bo, PropertyInfo prop, string rest)
+        public bool ParseBinding(BindableObject bo, PropertyInfo prop, string rest)
         {
             var targetProperty = bo.GetType()
                                    .GetRuntimeFields()
@@ -187,6 +191,32 @@ namespace Sancho.DOM.XamarinForms
 
                 return true;
             }
+        }
+
+        public bool ParseStaticResource(object parent, PropertyInfo prop, string rest)
+        {
+            Log.Debug($"Setting static resource '{rest}' for property {parent.GetType().FullName}.{prop.Name}");
+
+            object res = null;
+            var container = parent as VisualElement;
+            while (container != null)
+            {
+                var resources = container.Resources;
+                if (resources?.Any() == true &&
+                    resources.TryGetValue(rest, out res))
+                    break;
+
+                container = container.Parent as VisualElement;
+            }
+
+            if (container == null)
+                res = xamlServices.GetResource(rest);
+            if (res != null)
+            {
+                prop.SetValue(parent, res);
+            }
+
+            return true;
         }
     }
 }

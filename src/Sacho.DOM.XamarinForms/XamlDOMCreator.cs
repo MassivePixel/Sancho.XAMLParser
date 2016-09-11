@@ -12,14 +12,19 @@ using Xamarin.Forms;
 
 namespace Sancho.DOM.XamarinForms
 {
-    public class XamlDOMCreator : IXamlDOM
+    public partial class XamlDOMCreator : IXamlDOM
     {
-        public object Root { get; private set; }
+        IXamlServices xamlServices;
 
+        public object Root { get; private set; }
         public TargetPlatform Platform { get; set; }
 
-        public XamlDOMCreator()
+        Dictionary<XamlNode, object> nodeToElementMapper = new Dictionary<XamlNode, object>();
+
+        public XamlDOMCreator(IXamlServices services)
         {
+            xamlServices = services;
+
             Log.Verbose($"{nameof(XamlDOMCreator)} created");
         }
 
@@ -33,10 +38,46 @@ namespace Sancho.DOM.XamarinForms
                 return;
             }
 
+            Root = null;
+            nodeToElementMapper = new Dictionary<XamlNode, object>();
+
             AddChild(null, node);
+            if (Root != null)
+            {
+                // now apply markup extensions
+                ApplyMarkupExtensions(nodeToElementMapper.FirstOrDefault(x => x.Value == Root).Key);
+            }
         }
 
-        public void AddChild(object parent, XamlNode node)
+        void ApplyMarkupExtensions(XamlNode node, XamlNode parent = null)
+        {
+            if (node == null) return;
+
+            foreach (var child in node.Children)
+                ApplyMarkupExtensions(child, node);
+
+            foreach (var prop in node.Properties)
+            {
+                if (!(prop is XamlStringProperty))
+                    continue;
+
+                var value = prop.GetString();
+                if (value.StartsWith("{", StringComparison.Ordinal))
+                {
+                    var element = nodeToElementMapper[node];
+                    var p = element.GetType().GetRuntimeProperty(prop.Name);
+                    if (p == null)
+                    {
+                        Log.Warning($"No property {prop.Name} found under {element.GetType().FullName}");
+                        return;
+                    }
+
+                    ParseMarkupExtension(element, p, value);
+                }
+            }
+        }
+
+        void AddChild(object parent, XamlNode node)
         {
             var element = CreateNode(node);
 
@@ -50,9 +91,17 @@ namespace Sancho.DOM.XamarinForms
                 Log.Debug("Adding {element} as child to parent", element);
                 AddToParent(parent, (View)element);
             }
+            else if (element is ResourceDictionary)
+            {
+                if (parent is VisualElement)
+                {
+                    Log.Debug("Adding resource dictionary to parent page");
+                    ((VisualElement)parent).Resources = (ResourceDictionary)element;
+                }
+            }
         }
 
-        public void AddToParent(object parent, View view)
+        void AddToParent(object parent, View view)
         {
             if (parent == null || view == null)
             {
@@ -87,7 +136,7 @@ namespace Sancho.DOM.XamarinForms
             }
         }
 
-        public void ApplyProperty(object parent, XamlProperty xamlProperty)
+        void ApplyProperty(object parent, XamlProperty xamlProperty)
         {
             if (parent == null)
             {
@@ -159,7 +208,7 @@ namespace Sancho.DOM.XamarinForms
             }
         }
 
-        public void HandleProperty(object parent, XamlProperty xamlProperty)
+        void HandleProperty(object parent, XamlProperty xamlProperty)
         {
             if (parent == null)
             {
@@ -184,7 +233,7 @@ namespace Sancho.DOM.XamarinForms
             if (xamlProperty is XamlStringProperty)
             {
                 Log.Debug("Setting string attribute");
-                AttributeHelper.Apply(parent, prop, xamlProperty.GetString());
+                Apply(parent, prop, xamlProperty.GetString());
             }
             else if (xamlProperty is XamlNodesProperty)
             {
@@ -201,7 +250,16 @@ namespace Sancho.DOM.XamarinForms
                     return;
                 }
 
-                if (typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(prop.PropertyType.GetTypeInfo()))
+                if (prop.PropertyType == typeof(ResourceDictionary))
+                {
+                    var resDict = values.OfType<ResourceDictionary>().FirstOrDefault();
+                    if (resDict != null)
+                    {
+                        Log.Debug($"Setting resource dictionary to parent {parent.GetType().FullName}");
+                        prop.SetValue(parent, resDict);
+                    }
+                }
+                else if (typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(prop.PropertyType.GetTypeInfo()))
                 {
                     Log.Debug("Target property is a an IEnumerable");
 
@@ -282,7 +340,16 @@ namespace Sancho.DOM.XamarinForms
             }
         }
 
-        public object CreateNode(XamlNode node)
+        object CreateNode(XamlNode node)
+        {
+            var element = CreateNodeInternal(node);
+            if (element != null)
+                nodeToElementMapper.Add(node, element);
+
+            return element;
+        }
+
+        object CreateNodeInternal(XamlNode node)
         {
             if (node == null)
             {
@@ -294,12 +361,14 @@ namespace Sancho.DOM.XamarinForms
             {
                 Log.Debug("Creating DataTemplate");
 
-                return new DataTemplate(() =>
+                var dt = new DataTemplate(() =>
                 {
                     if (node.Children.Any())
                         return CreateNode(node.Children.FirstOrDefault());
                     return null;
                 });
+
+                return dt;
             }
 
             var type = ReflectionHelpers.GetType(node.Name);
@@ -315,13 +384,58 @@ namespace Sancho.DOM.XamarinForms
             if (type != null)
             {
                 Log.Debug($"Found type for {node.Name}");
-                var element = Activator.CreateInstance(type);
 
-                foreach (var child in node.Children)
-                    AddChild(element, child);
+                object element = null;
+
+                // special case for certain types
+                var typeConverter = ReflectionHelpers.GetTypeConverter(type);
+                if (typeConverter != null && node.Properties.Any(p => p.IsContent))
+                {
+                    element = typeConverter.ConvertFromInvariantString(node.Properties.First(p => p.IsContent).GetString());
+                }
+                
+                if (element == null)
+                {
+                    element = Activator.CreateInstance(type);
+                }
 
                 foreach (var prop in node.Properties)
                     ApplyProperty(element, prop);
+
+                foreach (var child in node.Children)
+                {
+                    if (element is ResourceDictionary)
+                    {
+                        var key = child.Properties
+                                       .FirstOrDefault(p => p.Name == "Key")
+                                       .IfNotNull(p =>
+                                       {
+                                           if (p is XamlStringProperty)
+                                               return p.GetString();
+                                           return null;
+                                       });
+
+                        var value = CreateNode(child);
+                        if (key == null)
+                        {
+                            Log.Error("Adding static resource without a key!");
+                        }
+                        else if (value == null)
+                        {
+                            Log.Error("Adding static resource with null value!");
+                        }
+                        else
+                        {
+                            Log.Debug($"Adding static resource {key} to resource dictionary");
+                            element.Cast<ResourceDictionary>()
+                                   .Add(key, value);
+                        }
+                    }
+                    else
+                    {
+                        AddChild(element, child);
+                    }
+                }
 
                 return element;
             }
@@ -343,7 +457,7 @@ namespace Sancho.DOM.XamarinForms
                     var typeArgumentTypeName = typeArgumentProperty.GetString();
                     var typeArgument = ReflectionHelpers.GetType(typeArgumentTypeName) ??
                                        ReflectionHelpers.GetAllType(typeArgumentTypeName);
-                    
+
                     if (typeArgument == null)
                     {
                         Log.Error($"Unable to find type for {typeArgumentTypeName}");
@@ -424,7 +538,7 @@ namespace Sancho.DOM.XamarinForms
             }
 
             object parsed;
-            if (!AttributeHelper.Parse(parameters[1].ParameterType, value, out parsed))
+            if (!Parse(parameters[1].ParameterType, value, out parsed))
             {
                 Log.Error($"Cannot parse value '{value}' for attached property {property}");
                 return;

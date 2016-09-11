@@ -14,6 +14,28 @@ namespace TabletDesigner
         JSON
     }
 
+    public class XamlServices : IXamlServices
+    {
+        Page page;
+
+        public XamlServices(Page page)
+        {
+            this.page = page;
+        }
+
+        public object GetResource(string key)
+        {
+            object value = null;
+            if (page?.Resources?.TryGetValue(key, out value) == true)
+                return value;
+
+            if (Application.Current.Resources.TryGetValue(key, out value))
+                return value;
+
+            return null;
+        }
+    }
+
     public partial class TabletDesignerPage : ContentPage
     {
         ILogAccess logAccess;
@@ -61,7 +83,10 @@ namespace TabletDesigner
                 rootNode = new ContentNodeProcessor().Process(rootNode);
                 rootNode = new ExpandedPropertiesProcessor().Process(rootNode);
 
-                var dom = new XamlDOMCreator().CreateNode(rootNode);
+                var creator = new XamlDOMCreator(new XamlServices(this));
+                creator.AddNode(rootNode);
+                var dom = creator.Root;
+
                 if (dom is View)
                     Root.Content = (View)dom;
                 else if (dom is ContentPage)
