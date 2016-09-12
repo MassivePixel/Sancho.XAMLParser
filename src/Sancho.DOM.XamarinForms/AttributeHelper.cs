@@ -20,8 +20,8 @@ namespace Sancho.DOM.XamarinForms
 
             if (value.StartsWith("{"))
             {
+                // cannot handle markup extensions in this pass
                 return false;
-                //return ParseMarkupExtension(parent, prop, value);
             }
 
             // regular attributes are value
