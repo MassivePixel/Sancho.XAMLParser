@@ -22,7 +22,7 @@ platform: Any CPU
 
 build:
   parallel: true
-  project: Sancho.XAMLParser.AppVeyor.sln
+  project: src/Sancho.XAMLParser/Sancho.XAMLParser.csproj
   verbosity: minimal
   
 after_build:
