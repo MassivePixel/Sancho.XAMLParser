@@ -5,7 +5,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2564873C-D81
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{166256ED-BED2-40F8-BF8B-0BA37E2CE8A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamarinFormsTests", "tests\ParserTests\XamarinFormsTests.csproj", "{BAB83348-0035-465B-A693-CB46102A2A67}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamarinForms.tests", "tests\ParserTests\XamarinForms.Tests.csproj", "{BAB83348-0035-465B-A693-CB46102A2A67}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sancho.XAMLParser", "src\Sancho.XAMLParser\Sancho.XAMLParser.csproj", "{E8496901-E68F-466C-9FF9-32F71CC8B965}"
 EndProject

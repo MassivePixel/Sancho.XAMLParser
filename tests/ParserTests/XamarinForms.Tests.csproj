@@ -8,7 +8,7 @@
     <ProjectGuid>{BAB83348-0035-465B-A693-CB46102A2A67}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>XamarinFormsTests</RootNamespace>
-    <AssemblyName>DeserializationTests</AssemblyName>
+    <AssemblyName>XamarinForms.tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
