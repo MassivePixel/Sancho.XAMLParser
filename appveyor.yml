@@ -33,5 +33,6 @@ after_build:
   - ps: msbuild "src/Sancho.XAMLParser/Sancho.XAMLParser.csproj" /m /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
   - ps: msbuild "src/Sancho.DOM.XamarinForms/Sancho.DOM.XamarinForms.csproj" /m /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
   - ps: nuget pack src/Sancho.XAMLParser/Sancho.XAMLParser.csproj -Version $env:APPVEYOR_BUILD_VERSION
+  - ps: nuget pack src/Sancho.DOM.XamarinForms/Sancho.DOM.XamarinForms.csproj -Version $env:APPVEYOR_BUILD_VERSION
 artifacts:
   - path: '**\Sancho.*.nupkg'
