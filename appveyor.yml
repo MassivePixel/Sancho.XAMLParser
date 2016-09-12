@@ -27,6 +27,5 @@ build:
   
 after_build:
   - ps: nuget pack src/Sancho.XAMLParser/Sancho.XAMLParser.csproj -Version $env:APPVEYOR_BUILD_VERSION
-  - ps: nuget pack src/Sancho.DOM.XamarinForms/Sancho.DOM.XamarinForms.csproj -Version $env:APPVEYOR_BUILD_VERSION
 artifacts:
   - path: '**\Sancho.*.nupkg'
