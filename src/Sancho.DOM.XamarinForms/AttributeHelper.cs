@@ -180,7 +180,7 @@ namespace Sancho.DOM.XamarinForms
         {
             var targetProperty = bo.GetType()
                                    .GetRuntimeFields()
-                                   .Select(field => field.GetValue(null))
+                                   .Select(field => field.IsStatic ? field.GetValue(null) : field.GetValue(bo))
                                    .OfType<BindableProperty>()
                                    .FirstOrDefault(bp => bp.PropertyName == prop.Name);
 
