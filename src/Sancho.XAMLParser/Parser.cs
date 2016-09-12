@@ -4,15 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Sancho.XAMLParser.Interfaces;
 using Serilog;
 
 namespace Sancho.XAMLParser
 {
     public class Parser
     {
-        IXamlDOM dom;
-
         public Parser()
         {
             Log.Debug("Parser instantiated");
