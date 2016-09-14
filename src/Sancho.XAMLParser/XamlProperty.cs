@@ -7,6 +7,11 @@ using System.Xml.Linq;
 
 namespace Sancho.XAMLParser
 {
+    public static class XAMLDefaults
+    {
+        public const string DefaultNamespace = "http://schemas.microsoft.com/winfx/2009/xaml";
+    }
+
     public static class XamlPropertyExtensions
     {
         public static string GetString(this XamlProperty prop)
@@ -26,12 +31,19 @@ namespace Sancho.XAMLParser
 
     public abstract class XamlProperty
     {
+        public string Namespace { get; }
         public string Name { get; set; }
 
         public bool IsContent => string.IsNullOrWhiteSpace(Name);
 
         public XamlProperty()
         {
+        }
+
+        public XamlProperty(XName name)
+        {
+            Namespace = name.NamespaceName;
+            Name = name.LocalName;
         }
 
         public XamlProperty(string name)
@@ -45,7 +57,7 @@ namespace Sancho.XAMLParser
         public string Value { get; }
 
         public XamlStringProperty(XName name, string value = null)
-            : base(name.LocalName)
+            : base(name)
         {
             Value = value;
         }
@@ -62,6 +74,20 @@ namespace Sancho.XAMLParser
                                  Name,
                                  Value != null ? Value.Substring(0, Math.Min(20, Value.Length)) : null);
         }
+    }
+
+    public class XamlNamespaceProperty : XamlProperty
+    {
+        public string Value { get; }
+
+        public XamlNamespaceProperty(XName name, string value)
+            : base(name)
+        {
+            Value = value;
+        }
+
+        public override string ToString()
+        => $"[XamlNamespace Namespace={Namespace}, Name={Name}: Value={Value}]";
     }
 
     public class XamlNodesProperty : XamlProperty

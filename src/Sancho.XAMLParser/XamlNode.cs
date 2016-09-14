@@ -1,11 +1,13 @@
 // Copyright (c) Massive Pixel.  All Rights Reserved.  Licensed under the MIT License (MIT). See License.txt in the project root for license information.
 
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace Sancho.XAMLParser
 {
     public class XamlNode
     {
+        public string Namespace { get; }
         public string Name { get; }
 
         public List<XamlNode> Children { get; } = new List<XamlNode>();
@@ -14,6 +16,12 @@ namespace Sancho.XAMLParser
         public XamlNode(string name)
         {
             Name = name;
+        }
+
+        public XamlNode(XName name)
+        {
+            Namespace = name.NamespaceName;
+            Name = name.LocalName;
         }
 
         public override string ToString()

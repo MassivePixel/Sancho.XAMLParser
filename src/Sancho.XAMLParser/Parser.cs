@@ -38,7 +38,7 @@ namespace Sancho.XAMLParser
 
         public static XamlNode ParseNode(XElement element)
         {
-            var node = new XamlNode(element.Name.LocalName);
+            var node = new XamlNode(element.Name);
 
             foreach (var attribute in element.Attributes())
                 node.Properties.Add(ParseAttribute(element, attribute));
@@ -76,6 +76,8 @@ namespace Sancho.XAMLParser
         => elements.Select(el => ParseNode(el));
 
         public static XamlProperty ParseAttribute(XElement element, XAttribute attribute)
-        => new XamlStringProperty(attribute.Name, attribute.Value);
+        => attribute.IsNamespaceDeclaration
+            ? (XamlProperty)new XamlNamespaceProperty(attribute.Name, attribute.Value)
+            : (XamlProperty)new XamlStringProperty(attribute.Name, attribute.Value);
     }
 }
