@@ -1,9 +1,11 @@
 ﻿// Copyright (c) Massive Pixel.  All Rights Reserved.  Licensed under the MIT License (MIT). See License.txt in the project root for license information.
 
 using System;
+using System.Linq;
 using Sancho.DOM.XamarinForms;
 using TabletDesigner.Helpers;
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 
 namespace TabletDesigner
 {
@@ -26,6 +28,44 @@ namespace TabletDesigner
             logAccess = DependencyService.Get<ILogAccess>();
 
             cvi = new ContentViewInjector(Root);
+
+            var cp = new ContentPage();
+            cp.LoadFromXaml(@"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+             xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+             x:Class=""XamlSamples.SliderBindingsPage""
+             Title=""Slider Bindings Page"">
+
+  <StackLayout>
+    <Label Text=""ROTATION""
+           BindingContext=""{x:Reference Name=slider}""
+           Rotation=""{Binding Path=Value}""
+           FontAttributes=""Bold""
+           FontSize=""Large""
+           HorizontalOptions=""Center""
+           VerticalOptions=""CenterAndExpand"" />
+
+    <Slider x:Name=""slider""
+            Maximum=""360""
+            VerticalOptions=""CenterAndExpand"" />
+
+    <Label BindingContext=""{x:Reference slider}""
+          Text=""{Binding Value,
+                          StringFormat='The angle is {0:F0} degrees'}""
+          FontAttributes=""Bold""
+          FontSize=""Large""
+          HorizontalOptions=""Center""
+          VerticalOptions=""CenterAndExpand"" />
+  </StackLayout>
+</ContentPage>");
+            var sl = cp.Content as StackLayout;
+            var label = sl?.Children
+                           ?.OfType<Label>()
+                           ?.LastOrDefault();
+            var props = label?.GetProperties();
+
+            var slider = NameScopeExtensions.FindByName<Slider>(cp, "slider");
+            var ns = NameScope.GetNameScope(cp);
         }
 
         protected override void OnAppearing()

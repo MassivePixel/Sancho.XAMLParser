@@ -61,6 +61,7 @@
     <Compile Include="PropertiesTests.cs" />
     <Compile Include="QuickStartTest.cs" />
     <Compile Include="ReflectionTests.cs" />
+    <Compile Include="BindableObjectHelperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -186,5 +186,19 @@ namespace Sancho.DOM.XamarinForms
 
             return converter;
         }
+
+        static Func<BindableObject, string, BindableProperty> CachedGetBindableProperty
+        = CacheHelper.Cache<BindableObject, string, BindableProperty>((bo, propertyName) =>
+        {
+            return bo.GetType()
+                     .GetRuntimeFields()
+                     .Where(field => field.IsStatic)
+                     .Select(field => field.GetValue(null))
+                     .OfType<BindableProperty>()
+                     .FirstOrDefault(bp => bp.PropertyName == propertyName);
+        });
+
+        public static BindableProperty GetBindableProperty(this BindableObject bo, string propertyName)
+        => CachedGetBindableProperty(bo, propertyName);
     }
 }

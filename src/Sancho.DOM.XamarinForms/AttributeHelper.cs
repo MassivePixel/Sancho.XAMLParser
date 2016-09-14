@@ -178,25 +178,19 @@ namespace Sancho.DOM.XamarinForms
 
         public bool ParseBinding(BindableObject bo, PropertyInfo prop, string rest)
         {
-            var targetProperty = bo.GetType()
-                                   .GetRuntimeFields()
-                                   .Select(field => field.IsStatic ? field.GetValue(null) : field.GetValue(bo))
-                                   .OfType<BindableProperty>()
-                                   .FirstOrDefault(bp => bp.PropertyName == prop.Name);
+            var targetProperty = bo.GetBindableProperty(prop.Name);
 
             if (targetProperty == null)
             {
                 Log.Error($"No target property named {prop.Name}");
                 return false;
             }
-            else
-            {
-                Log.Debug($"Creating Binding for '{rest}'");
-                var binding = string.IsNullOrWhiteSpace(rest) ? new Binding(".") : new Binding(rest);
-                bo.SetBinding(targetProperty, binding);
 
-                return true;
-            }
+            Log.Debug($"Creating Binding for '{rest}'");
+            var binding = string.IsNullOrWhiteSpace(rest) ? new Binding(".") : new Binding(rest);
+            bo.SetBinding(targetProperty, binding);
+
+            return true;
         }
 
         public bool ParseStaticResource(object parent, PropertyInfo prop, string rest)
