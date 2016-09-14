@@ -150,13 +150,13 @@
       <Project>{BF1ABDF9-4B05-46EC-BFF4-5C157098D213}</Project>
       <Name>TabletDesigner</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\src\Sancho.DOM.XamarinForms\Sancho.DOM.XamarinForms.csproj">
+      <Project>{D0EDD907-6345-4C51-BB14-7CBBA52753D2}</Project>
+      <Name>Sancho.DOM.XamarinForms</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\src\Sancho.XAMLParser\Sancho.XAMLParser.csproj">
       <Project>{E8496901-E68F-466C-9FF9-32F71CC8B965}</Project>
       <Name>Sancho.XAMLParser</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Sacho.DOM.XamarinForms\Sacho.DOM.XamarinForms.csproj">
-      <Project>{D0EDD907-6345-4C51-BB14-7CBBA52753D2}</Project>
-      <Name>Sacho.DOM.XamarinForms</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
