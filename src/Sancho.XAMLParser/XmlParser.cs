@@ -8,9 +8,9 @@ using Serilog;
 
 namespace Sancho.XAMLParser
 {
-    public class Parser
+    public class XmlParser : IParser
     {
-        public Parser()
+        public XmlParser()
         {
             Log.Debug("Parser instantiated");
         }

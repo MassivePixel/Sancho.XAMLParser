@@ -39,6 +39,7 @@
     <Compile Include="XamlNode.cs" />
     <Compile Include="XamlProperty.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="IParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Xamarin.Forms.Core">
