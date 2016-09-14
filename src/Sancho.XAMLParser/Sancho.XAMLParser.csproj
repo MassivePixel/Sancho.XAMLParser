@@ -33,7 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Parser.cs" />
+    <Compile Include="XmlParser.cs" />
     <Compile Include="Interfaces\IPlatformServices.cs" />
     <Compile Include="Interfaces\IXamlDOM.cs" />
     <Compile Include="XamlNode.cs" />

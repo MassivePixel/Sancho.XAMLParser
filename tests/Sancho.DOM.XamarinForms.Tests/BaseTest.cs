@@ -22,7 +22,7 @@ namespace XamarinFormsTests
         : IClassFixture<ReflectionFixture>
     {
         StringBuilder sb = new StringBuilder();
-        protected Parser parser;
+        protected XmlParser parser;
         XamlDOMCreator dom = new XamlDOMCreator
         {
             Platform = Xamarin.Forms.TargetPlatform.iOS
@@ -30,7 +30,7 @@ namespace XamarinFormsTests
 
         public BaseTest()
         {
-            parser = new Parser();
+            parser = new XmlParser();
         }
 
         //protected object ParseVisualElement(string xaml)

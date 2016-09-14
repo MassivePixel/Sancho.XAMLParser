@@ -16,7 +16,7 @@ namespace Sancho.DOM.XamarinForms
 
         public void SetXaml(string text)
         {
-            var parser = new Parser();
+            var parser = new XmlParser();
             var rootNode = parser.Parse(text);
 
             rootNode = new ContentNodeProcessor().Process(rootNode);
