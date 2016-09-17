@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sancho.DOM.XamarinForms", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sancho.DOM.XamarinForms.Tests", "tests\Sancho.DOM.XamarinForms.Tests\Sancho.DOM.XamarinForms.Tests.csproj", "{A264B94D-BABF-47BF-A78B-356BC368CEBA}"
 EndProject
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "Sancho.Parser.Core", "src\Sancho.Parser.Core\Sancho.Parser.Core.fsproj", "{31573BC5-0EA0-4972-B3AF-ED86FDE7490C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,20 +59,32 @@ Global
 		{A264B94D-BABF-47BF-A78B-356BC368CEBA}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{A264B94D-BABF-47BF-A78B-356BC368CEBA}.Debug|iPhone.ActiveCfg = Debug|Any CPU
 		{A264B94D-BABF-47BF-A78B-356BC368CEBA}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{31573BC5-0EA0-4972-B3AF-ED86FDE7490C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31573BC5-0EA0-4972-B3AF-ED86FDE7490C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31573BC5-0EA0-4972-B3AF-ED86FDE7490C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31573BC5-0EA0-4972-B3AF-ED86FDE7490C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31573BC5-0EA0-4972-B3AF-ED86FDE7490C}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{31573BC5-0EA0-4972-B3AF-ED86FDE7490C}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{31573BC5-0EA0-4972-B3AF-ED86FDE7490C}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{31573BC5-0EA0-4972-B3AF-ED86FDE7490C}.Release|iPhone.Build.0 = Release|Any CPU
+		{31573BC5-0EA0-4972-B3AF-ED86FDE7490C}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{31573BC5-0EA0-4972-B3AF-ED86FDE7490C}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{31573BC5-0EA0-4972-B3AF-ED86FDE7490C}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{31573BC5-0EA0-4972-B3AF-ED86FDE7490C}.Debug|iPhone.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{E8496901-E68F-466C-9FF9-32F71CC8B965} = {2564873C-D81B-4DD4-BCD3-DECD733F5D79}
 		{D0EDD907-6345-4C51-BB14-7CBBA52753D2} = {2564873C-D81B-4DD4-BCD3-DECD733F5D79}
 		{A264B94D-BABF-47BF-A78B-356BC368CEBA} = {166256ED-BED2-40F8-BF8B-0BA37E2CE8A6}
+		{31573BC5-0EA0-4972-B3AF-ED86FDE7490C} = {2564873C-D81B-4DD4-BCD3-DECD733F5D79}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
 		$0.TextStylePolicy = $1
-		$1.inheritsSet = null
-		$1.scope = application/xml
+		$1.inheritsSet = VisualStudio
+		$1.scope = text/x-fsharp
 		$1.inheritsScope = text/plain
 		$1.FileWidth = 120
-		$1.TabsToSpaces = False
 		$0.XmlFormattingPolicy = $2
 		$2.DefaultFormat = $3
 		$3.AttributesInNewLine = True
@@ -101,5 +115,15 @@ Global
 		$4.inheritsSet = Mono
 		$4.inheritsScope = text/x-csharp
 		$4.scope = text/x-csharp
+		$0.FSharpFormattingPolicy = $5
+		$5.DefaultFormat = $6
+		$6.IndentOnTryWith = False
+		$6.ReorderOpenDeclaration = False
+		$6.SpaceAfterComma = True
+		$6.SpaceAfterSemicolon = True
+		$6.SpaceAroundDelimiter = True
+		$6.SpaceBeforeArgument = True
+		$6.SpaceBeforeColon = True
+		$5.scope = text/x-fsharp
 	EndGlobalSection
 EndGlobal

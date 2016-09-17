@@ -40,6 +40,7 @@
     <Compile Include="XamlProperty.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="IParser.cs" />
+    <Compile Include="test.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Xamarin.Forms.Core">
@@ -54,12 +55,21 @@
     <Reference Include="Serilog">
       <HintPath>..\..\packages\Serilog.2.3.0-dev-00707\lib\netstandard1.0\Serilog.dll</HintPath>
     </Reference>
+    <Reference Include="FSharp.Core">
+      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\4.6.0\lib\mono\Reference Assemblies\Microsoft\FSharp\.NETCore\3.78.3.1\FSharp.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Interfaces\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sancho.Parser.Core\Sancho.Parser.Core.fsproj">
+      <Project>{31573BC5-0EA0-4972-B3AF-ED86FDE7490C}</Project>
+      <Name>Sancho.Parser.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="..\..\packages\Xamarin.Forms.2.3.1.114\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets" Condition="Exists('..\..\packages\Xamarin.Forms.2.3.1.114\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets')" />
