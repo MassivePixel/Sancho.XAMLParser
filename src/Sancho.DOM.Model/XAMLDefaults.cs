@@ -1,11 +1,9 @@
 // Copyright (c) Massive Pixel.  All Rights Reserved.  Licensed under the MIT License (MIT). See License.txt in the project root for license information.
 
-using Sancho.DOM.Model;
-
-namespace Sancho.XAMLParser.Interfaces
+namespace Sancho.DOM.Model
 {
-    public interface IXamlDOM
+    public static class XAMLDefaults
     {
-        void AddNode(XamlNode root);
+        public const string DefaultNamespace = "http://schemas.microsoft.com/winfx/2009/xaml";
     }
 }

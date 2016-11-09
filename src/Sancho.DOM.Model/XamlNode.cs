@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using System.Xml.Linq;
 
-namespace Sancho.XAMLParser
+namespace Sancho.DOM.Model
 {
     public class XamlNode
     {
